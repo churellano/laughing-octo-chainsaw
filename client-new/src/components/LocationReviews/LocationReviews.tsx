@@ -1,5 +1,5 @@
 import { Box, Typography, List, ListItem, ListItemAvatar, Avatar, ListItemText, Divider } from "@material-ui/core";
-import { LocationReview } from "../../interfaces/LocationReview";
+import { ILocationReview } from "../../interfaces/ILocationReview";
 import { Fragment } from 'react';
 
 import dayjs from "dayjs";
@@ -7,7 +7,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 
 interface LocationReviewsProps {
-    reviews: Array<LocationReview>;
+    reviews: Array<ILocationReview>;
 }
 
 function LocationReviews(props: LocationReviewsProps) {
@@ -16,7 +16,7 @@ function LocationReviews(props: LocationReviewsProps) {
             <Typography align='left'>Recent reviews</Typography>
             <List>
                 {
-                   props.reviews.map((review: LocationReview, index) => (
+                   props.reviews.map((review: ILocationReview, index) => (
                             <Fragment>
                                 <ListItem>
                                     <ListItemAvatar>

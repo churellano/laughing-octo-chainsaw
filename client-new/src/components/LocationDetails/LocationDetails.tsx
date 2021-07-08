@@ -8,9 +8,14 @@ import ThumbsUpDownIcon from '@material-ui/icons/ThumbsUpDown';
 import Divider from '@material-ui/core/Divider';
 
 import LocationReviews from '../LocationReviews';
+import { ILocationDetails } from "../../interfaces/ILocationDetails";
+import { ILocationReview } from "../../interfaces/ILocationReview";
+import { useEffect, useState } from "react";
+import { findLocationDetails } from "../../services/LocationDetailsService";
 
 const nearestList = [
     {
+        placeId: 'ChIJJW_B_DnXhVQRPirjsR6wKhc',
         name: 'McDonald\'s',
         address: '9638 160 St, Surrey, BC',
         distance: 0.14,
@@ -31,6 +36,7 @@ const nearestList = [
         ]
     },
     {
+        placeId: 'ChIJKVDKWDfXhVQROFFS5VeBuuY',
         name: 'Chevron',
         address: '9610 160 St, Surrey, BC',
         distance: 0.1,
@@ -45,6 +51,7 @@ const nearestList = [
         ]
     },
     {
+        placeId: 'ChIJwex-bTnXhVQRu6H8FUkJVNI',
         name: 'North Surrey Community Park',
         address: '15898 97a Ave, Surrey, BC',
         distance: 1.4,
@@ -59,6 +66,7 @@ const nearestList = [
         ]
     },
     {
+        placeId: 'ChIJVWLXWNPZhVQRbGogBYEKzCc',
         name: 'Simon Fraser University - Surrey Campus',
         address: '13450 102 Ave #250, Surrey, BC',
         distance: 5.3,
@@ -74,14 +82,6 @@ const nearestList = [
     }
 ]
 
-interface LocationDetail {
-    name: string;
-    address: string;
-
-    reviews: Array<any>;
-}
-
-
 const decimalToPercent = (decimal: number) => Math.floor(decimal * 100);
 
 // From https://stackoverflow.com/a/56460731
@@ -92,8 +92,8 @@ const truncate = (str: string, max = 10) => {
     return array.slice(0, max).join(' ') + ellipsis;
 };
 
-const buildRecommendString = (locationDetail: LocationDetail) => {
-    const reviewsLength = locationDetail.reviews.length;
+const buildRecommendString = (locationDetails: ILocationDetails) => {
+    const reviewsLength = locationDetails.reviews.length;
     let recommendString = `${decimalToPercent(nearestList[0].score)}% recommend this location `;
     if (reviewsLength === 0) {
         recommendString += '(No reviews)';
@@ -106,11 +106,17 @@ const buildRecommendString = (locationDetail: LocationDetail) => {
     return recommendString;
 }
 
-const timeSincePosted = (date: Date) => {
-
-}
-
 function LocationDetails() {
+
+    const [locationDetails, setlocationDetails] = useState(null);
+
+    useEffect(() => {
+        if (!locationDetails) {
+            findLocationDetails('ChIJJW_B_DnXhVQRPirjsR6wKhc')
+                .then(data => console.log('data', data));
+        }
+    });
+
     return (
         <Box ml={1}>
             <Box ml={1} mb={2} style={{'width': '100%'}}>
@@ -125,7 +131,7 @@ function LocationDetails() {
                         </ListItem>
                         <ListItem>
                             <ThumbsUpDownIcon style={{ color: (nearestList[0].score > 0.5) ? green[500] : red[500], 'paddingRight': '12px'}}/>
-                            <ListItemText primary={buildRecommendString(nearestList[0])}/>
+                            <ListItemText primary={buildRecommendString((nearestList[0] as unknown) as ILocationDetails)}/>
                         </ListItem>
                     </List>
                     <Divider />
@@ -134,7 +140,7 @@ function LocationDetails() {
             
             <Box m={1} style={{'width': '100%'}}>
                 <Paper variant='outlined'>
-                    <LocationReviews reviews={nearestList[0].reviews} />
+                    <LocationReviews reviews={nearestList[0].reviews as Array<ILocationReview>} />
                 </Paper>
             </Box>
             
