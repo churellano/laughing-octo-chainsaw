@@ -7,12 +7,11 @@ const { findLocationDetails, createLocationDetails} = require('../queries/locati
 router.get('/:placeId', async (req, res) => {
   const placeId = req.params.placeId;
   const locationDetails = await findLocationDetails(placeId);
-
-  res.send(locationDetails);
+  locationDetails ? res.send(locationDetails) : res.sendStatus(404);
 });
 
 /* POST LocationDetails */
-router.post('/:placeId', async (req, res) => {
+router.post('/', async (req, res) => {
   const placeId = req.params.placeId;
   const { name, address } = req.body; 
   const locationDetails = await createLocationDetails(placeId, name, address);
