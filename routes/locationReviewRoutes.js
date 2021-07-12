@@ -1,14 +1,17 @@
+'use strict';
+
 var express = require('express');
 var router = express.Router();
 
-// const { findlocationReview, createlocationReview} = require('../queries/locationReviewQueries');
+const { findLocationReviews, createlocationReview} = require('../queries/locationReviewQueries');
 
-// /* GET LocationReviews listing. */
-// router.get('/:placeId', function(req, res, next) {
-//   const placeId = req.params.placeId;
-//   const locationReview = await findlocationReview(placeId);
+/* GET LocationReviews listing. */
+router.get('/:locationId', async (req, res) => {
+  const locationId = req.params.locationId;
+  const locationReviews = await findLocationReviews(locationId);
 
-//   res.send(locationReview);
-// });
+  console.log(locationId, locationReviews);
+  locationReviews ? res.send(locationReviews) : res.sendStatus(404);
+});
 
 module.exports = router;
