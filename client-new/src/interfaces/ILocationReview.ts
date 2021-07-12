@@ -1,6 +1,9 @@
+import { IUSer } from "./IUser";
+
 export interface ILocationReview {
+    _id: string;
     locationId: string;
-    username: string;
+    user: IUSer;
     description: string;
     postedDate: Date;
     recommend: boolean;

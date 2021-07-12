@@ -1,6 +1,7 @@
 import { ILocationReview } from "./ILocationReview";
 
 export interface ILocationDetails {
+    _id: string;
     placeId: string;
     name: string;
     address: string;
