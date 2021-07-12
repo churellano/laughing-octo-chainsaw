@@ -10,93 +10,28 @@ import Divider from '@material-ui/core/Divider';
 import LocationReviews from '../LocationReviews';
 import { ILocationDetails } from "../../interfaces/ILocationDetails";
 import { ILocationReview } from "../../interfaces/ILocationReview";
-import { useEffect, useState } from "react";
-import { findLocationDetails } from "../../services/LocationDetailsService";
-
-const nearestList = [
-    {
-        placeId: 'ChIJJW_B_DnXhVQRPirjsR6wKhc',
-        name: 'McDonald\'s',
-        address: '9638 160 St, Surrey, BC',
-        distance: 0.14,
-        score: 0.49,
-        reviews: [
-            {
-                username: 'mcdonaldslover',
-                description: 'nothing special, usually clean',
-                postedDate: new Date('2021-01-01'),
-                recommend: true
-            },
-            {
-                username: 'imlovinit',
-                description: 'good, but wish they had bidets',
-                postedDate: new Date('2021-07-06'),
-                recommend: true
-            }
-        ]
-    },
-    {
-        placeId: 'ChIJKVDKWDfXhVQROFFS5VeBuuY',
-        name: 'Chevron',
-        address: '9610 160 St, Surrey, BC',
-        distance: 0.1,
-        score: 0.85,
-        reviews: [
-            {
-                username: 'ferrariPeek',
-                description: 'usually cleaner than the mcdonalds next door',
-                postedDate: new Date('2021-01-02'),
-                recommend: true
-            }
-        ]
-    },
-    {
-        placeId: 'ChIJwex-bTnXhVQRu6H8FUkJVNI',
-        name: 'North Surrey Community Park',
-        address: '15898 97a Ave, Surrey, BC',
-        distance: 1.4,
-        score: 0.8,
-        reviews: [
-            {
-                username: 'ultiplayer',
-                description: 'not maintained very often',
-                postedDate: new Date('2021-01-03'),
-                recommend: false
-            }
-        ]
-    },
-    {
-        placeId: 'ChIJVWLXWNPZhVQRbGogBYEKzCc',
-        name: 'Simon Fraser University - Surrey Campus',
-        address: '13450 102 Ave #250, Surrey, BC',
-        distance: 5.3,
-        score: 0.9,
-        reviews: [
-            {
-                username: 'catcrab123',
-                description: 'Use the secluded ones on the main galleria, nestled in the hallways by the theatre',
-                postedDate: new Date('2021-07-07'),
-                recommend: true
-            }
-        ]
-    }
-]
+import { Fragment, useEffect, useState } from "react";
+import { useSelector, useDispatch } from 'react-redux';
+import { 
+    selectPlaceId,
+    fetchLocationDetails,
+    selectLocationDetails,
+    selectLocationDetailsFromMaps,
+    selectLocationDetailsError
+} from "../../features/locationDetails/LocationDetailsSlice";
+import {
+    fetchLocationReviews,
+    selectLocationReviews,
+} from '../../features/locationReview/LocationReviewSlice'
 
 const decimalToPercent = (decimal: number) => Math.floor(decimal * 100);
 
-// From https://stackoverflow.com/a/56460731
-const truncate = (str: string, max = 10) => {
-    const array = str.trim().split(' ');
-    const ellipsis = array.length > max ? '...' : '';
-
-    return array.slice(0, max).join(' ') + ellipsis;
-};
-
 const buildRecommendString = (locationDetails: ILocationDetails) => {
-    const reviewsLength = locationDetails.reviews.length;
-    let recommendString = `${decimalToPercent(nearestList[0].score)}% recommend this location `;
+    const reviewsLength = (typeof locationDetails.reviews !== undefined && locationDetails.reviews) ? locationDetails.reviews.length : 0; 
+    
+    let recommendString = `${decimalToPercent(calculateScore(locationDetails.upvotes, locationDetails.downvotes))}% recommend this location `;
     if (reviewsLength === 0) {
-        recommendString += '(No reviews)';
+        recommendString = 'No reviews yet. Be the first!';
     } else if (reviewsLength === 1) {
         recommendString += '(1 review)';
     } else {
@@ -106,46 +41,84 @@ const buildRecommendString = (locationDetails: ILocationDetails) => {
     return recommendString;
 }
 
-function LocationDetails() {
+const calculateScore = (upvotes: number, downvotes: number) => (upvotes) / (upvotes + downvotes);
 
-    const [locationDetails, setlocationDetails] = useState(null);
+const renderReviews = (locationReviews: Array<ILocationReview>) => (
+    <Box m={1} style={{'width': '100%'}}>
+        <Paper variant='outlined'>
+            <LocationReviews reviews={locationReviews} />
+        </Paper>
+    </Box>
+)
+
+const renderPage = (locationDetails: ILocationDetails) => (
+    <Fragment>
+        <Box ml={1} mb={2} style={{'width': '100%'}}>
+            <Paper variant='outlined'>
+                <Box p={1}>
+                    <Typography variant='h5'>{locationDetails?.name}</Typography>
+                </Box>
+                <List>
+                    <ListItem>
+                        <RoomIcon style={{'paddingRight': '12px'}}/>
+                        <ListItemText primary={locationDetails?.address} />
+                    </ListItem>
+                    <ListItem>
+                        <ThumbsUpDownIcon style={{ color: (calculateScore(locationDetails.upvotes, locationDetails.downvotes) > 0.5) ? green[500] : red[500], 'paddingRight': '12px'}}/>
+                        <ListItemText primary={buildRecommendString(locationDetails)}/>
+                    </ListItem>
+                </List>
+                <Divider />
+            </Paper>
+        </Box>
+        { locationDetails.reviews && locationDetails.reviews.length > 0 && renderReviews(locationDetails.reviews) }
+    </Fragment>
+)
+
+const renderLoading = () => (
+    <Paper variant='outlined'>
+        <Box p={1}>
+            <Typography>Loading...</Typography>
+        </Box>
+    </Paper>
+);
+
+function LocationDetails() {
+    const dispatch = useDispatch();
+    const placeId = useSelector(selectPlaceId);
+    const locationDetails = useSelector(selectLocationDetails);
+    const locationDetailsFromMaps = useSelector(selectLocationDetailsFromMaps);
+    const error = useSelector(selectLocationDetailsError);
+    const locationReviews = useSelector(selectLocationReviews);
 
     useEffect(() => {
-        if (!locationDetails) {
-            findLocationDetails('ChIJJW_B_DnXhVQRPirjsR6wKhc')
-                .then(data => console.log('data', data));
+        if (placeId && !locationDetails) {
+            dispatch(fetchLocationDetails(placeId));
+        } else if (placeId && locationDetails && placeId === locationDetails.placeId && locationReviews.length === 0) {
+            // Only check for reviews if the location is known to the database
+            dispatch(fetchLocationReviews(locationDetails._id));
         }
-    });
+    }, [dispatch, placeId, locationDetails, locationReviews]);
+
+    let content;
+    if (placeId && !locationDetails && !error) {
+        // Data not received yet
+        content = renderLoading();
+    } else if (placeId && locationDetails && locationReviews.length > 0 && !error) {
+        // Data received with details and reviews
+        content = renderPage({ ...locationDetails, reviews: locationReviews}); 
+    } else if (placeId && locationDetailsFromMaps && locationReviews.length === 0) {
+        // Selected location is unknown to database, display data from Maps
+        content = renderPage(locationDetailsFromMaps);
+    } else if (!locationDetailsFromMaps || error) {
+        content = error;
+    }
 
     return (
-        <Box ml={1}>
-            <Box ml={1} mb={2} style={{'width': '100%'}}>
-                <Paper variant='outlined'>
-                    <Box p={1}>
-                        <Typography variant='h5'>{nearestList[0].name}</Typography>
-                    </Box>
-                    <List>
-                        <ListItem>
-                            <RoomIcon style={{'paddingRight': '12px'}}/>
-                            <ListItemText primary={nearestList[0].address} />
-                        </ListItem>
-                        <ListItem>
-                            <ThumbsUpDownIcon style={{ color: (nearestList[0].score > 0.5) ? green[500] : red[500], 'paddingRight': '12px'}}/>
-                            <ListItemText primary={buildRecommendString((nearestList[0] as unknown) as ILocationDetails)}/>
-                        </ListItem>
-                    </List>
-                    <Divider />
-                </Paper>
-            </Box>
-            
-            <Box m={1} style={{'width': '100%'}}>
-                <Paper variant='outlined'>
-                    <LocationReviews reviews={nearestList[0].reviews as Array<ILocationReview>} />
-                </Paper>
-            </Box>
-            
+        <Box ml={2}>
+            {content}
         </Box>
-    )
+    ) ;
 }
 
 export default LocationDetails;
