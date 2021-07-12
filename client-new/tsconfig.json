@@ -1,6 +1,7 @@
 {
   "include": [
-    "./src/**/*.ts"
+    "./src/**/*.ts", 
+    "src/services/LocationReviewService.tsx", "src/services/LocationDetailsService.tsx" 
   ],
   "compilerOptions": {
     "target": "es5",
