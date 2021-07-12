@@ -1,8 +1,10 @@
 import { GOOGLE_API_KEY } from '../../.api-keys';
 import { GoogleMap, LoadScript, } from '@react-google-maps/api';
 import { Component } from 'react';
-import { Loader } from "@googlemaps/js-api-loader"
 import { Libraries } from '@react-google-maps/api/dist/utils/make-load-script-url';
+import { setSelectedPlaceId, setSelectedLocationDetailsFromMaps } from '../../features/locationDetails/LocationDetailsSlice';
+import { clearSelectedLocationReviews } from '../../features/locationReview/LocationReviewSlice';
+import { connect } from 'react-redux';
 
 const containerStyle = {
     width: '100%',
@@ -17,8 +19,6 @@ const defaultCenter = {
 };
 
 interface MapState {
-    googleMapsReady: boolean;
-    loader: Loader | null;
     lat: number;
     lng: number;
     map: google.maps.Map | null;
@@ -32,8 +32,6 @@ class MapContainer extends Component<any, MapState> {
     constructor(props: any) {
         super(props);
         this.state = {
-            googleMapsReady: false,
-            loader: null,
             lat: defaultCenter.lat,
             lng: defaultCenter.lng,
             map: null,
@@ -48,11 +46,14 @@ class MapContainer extends Component<any, MapState> {
             let service = new google.maps.places.PlacesService(this.state.map);
             let request = {
                 placeId,
-                fields: ['formatted_address', 'geometry', 'name']
+                fields: ['formatted_address', 'geometry', 'name', 'place_id']
             } as google.maps.places.PlaceDetailsRequest;
 
             service.getDetails(request, (placeResult, status) => {
                 if (status === google.maps.places.PlacesServiceStatus.OK && placeResult) {
+                    this.props.setSelectedPlaceId(placeId);
+                    this.props.setSelectedLocationDetailsFromMaps(placeResult);
+                    this.props.clearSelectedLocationReviews();
                     this.setState({ placeResult }, () => console.log('result: ', this.state.placeResult));
                 }
             });
@@ -90,4 +91,14 @@ class MapContainer extends Component<any, MapState> {
     
 }
 
-export default MapContainer;
+// const mapStateToProps = (state, ownProps) => ({
+//     // ... computed data from state and optionally ownProps
+// })
+  
+const mapDispatchToProps = {
+    setSelectedPlaceId,
+    setSelectedLocationDetailsFromMaps,
+    clearSelectedLocationReviews
+}
+
+export default connect(null, mapDispatchToProps)(MapContainer);
