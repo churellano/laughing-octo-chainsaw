@@ -17,13 +17,13 @@ function LocationReviews(props: LocationReviewsProps) {
             <List>
                 {
                    props.reviews.map((review: ILocationReview, index) => (
-                            <Fragment>
+                            <Fragment key={review.locationId}>
                                 <ListItem>
                                     <ListItemAvatar>
-                                        <Avatar>{review.username.split('')[0]}</Avatar>
+                                        <Avatar>{review.user.username.split('')[0]}</Avatar>
                                     </ListItemAvatar>
                                     <ListItemText
-                                        primary={review.username}
+                                        primary={review.user.username}
                                         secondary={
                                             <Fragment>
                                                 <Typography component="div" variant="body2" color="textSecondary">{dayjs().to(review.postedDate)}</Typography>
