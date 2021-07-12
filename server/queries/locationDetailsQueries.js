@@ -1,11 +1,9 @@
 // const connectionString =
-const mongoose = require('mongoose');
-const locationDetailsSchema = require('../schemas/locationDetailsSchema');
-const LocationDetails = mongoose.model('locationDetails', locationDetailsSchema, 'locationDetails');
+const LocationDetails = require('../schemas/locationDetailsSchema');
 
-async function findLocationDetails(username) {
-    return await LocationDetails.findOne({ username })
-  }
+async function findLocationDetails(placeId) {
+  return await LocationDetails.findOne({ placeId })
+}
 
 async function createLocationDetails(placeId, name, address) {
     return new LocationDetails({

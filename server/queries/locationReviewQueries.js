@@ -1,16 +1,21 @@
 // const connectionString =
-const mongoose = require('mongoose');
-const locationReviewSchema = require('../schemas/locationDetailsSchema');
-const LocationReview = mongoose.model('LocationReview', locationReviewSchema, 'LocationReview');
+const LocationReview = require('../schemas/locationReviewSchema');
+const ObjectId = require('mongoose').Types.ObjectId; 
 
-async function findLocationReview(username) {
-    return await LocationReview.findOne({ username })
-  }
+async function findLocationReviews(locationId) {
+  const locationReviews = await LocationReview
+    .find({ locationId: new ObjectId(locationId) })
+    .populate('user')
+    .sort({'postedDate': -1})
+    .limit(5);
 
-async function createLocationReview(locationId, username, description, recommend) {
+  return locationReviews;
+}
+
+async function createLocationReview(locationId, userId, description, recommend) {
     return new LocationReview({
       locationId,
-      username,
+      user: userId,
       description,
       postedDate: new Date(),
       recommend
@@ -18,6 +23,6 @@ async function createLocationReview(locationId, username, description, recommend
 }
 
 module.exports = {
-    findLocationReview,
+    findLocationReviews,
     createLocationReview
 }
