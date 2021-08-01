@@ -27,76 +27,102 @@ interface ISignupState {
 };
 
 function Signup({ showLogin }: ISignupProps) {
-    const [values, setValues] = useState<ISignupState>({
-        email: '',
-        username: '',
-        password: '',
-        isEmailTouched: false,
-        isEmailAvailable: false,
-        isUsernameTouched: false,
-        isUsernameAvailable: false,
-        showPassword: false
-    });
+    // const [values, setValues] = useState<ISignupState>({
+    //     email: '',
+    //     username: '',
+    //     password: '',
+    //     isEmailTouched: false,
+    //     isEmailAvailable: false,
+    //     isUsernameTouched: false,
+    //     isUsernameAvailable: false,
+    //     showPassword: false
+    // });
 
-    const handleChange = (prop: keyof ISignupState) => async (event: ChangeEvent<HTMLInputElement>) => {
-        console.log(event.target.value);
-        await setValues({ ...values, [prop]: event.target.value });
-        switch(prop) {
-            case 'email':
-                handleSetEmail(event.target.value);
-                break;
-            case 'username':
-                handleSetUsername(event.target.value);
-                break;
-        }
-    };
+    const [email, setEmail] = useState<string>('');
+    const [username, setUsername] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [isEmailTouched, setIsEmailTouched] = useState<boolean>(false);
+    const [isEmailAvailable, setIsEmailAvailable] = useState<boolean>(false);
+    const [isUsernameTouched, setIsUsernameTouched] = useState<boolean>(false);
+    const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
+    const [showPassword, setShowPassword] = useState<boolean>(false);
+
+    // useEffect(() => {
+    //     console.log('Changes: ', email, username, password);
+    // }, [email, username, password]);
+
+    // const handleChange = (prop: keyof ISignupState) => (event: ChangeEvent<HTMLInputElement>) => {
+    //     console.log(event.target.value);
+    //     setValues({ ...values, [prop]: event.target.value });
+    //     switch(prop) {
+    //         case 'email':
+    //             handleSetEmail(event.target.value);
+    //             break;
+    //         case 'username':
+    //             handleSetUsername(event.target.value);
+    //             break;
+    //     }
+    // };
 
     const handleClickShowPassword = () => {
-        setValues({ ...values, showPassword: !values.showPassword });
+        // setValues({ ...values, showPassword: !values.showPassword });
+        setShowPassword(!setShowPassword);
     };
 
     const isEmailValid = () => {
-        return isEmail(values.email) && values.isEmailAvailable;
+        return isEmail(email) && isEmailAvailable;
     }
 
     const createEmailErrorMessage = () => {
         let errorMessage = "";
-        if (values.email && values.email.length > 0 && !isEmail(values.email)) {
+        if (email && email.length > 0 && !isEmail(email)) {
             errorMessage = "Invalid email format.";
-        } else if (values.email && values.email.length && !values.isEmailAvailable) {
+        } else if (email && email.length && !isEmailAvailable) {
             errorMessage = "Email not available."
         }
         return errorMessage;
     }
 
     const isUsernameValid = () => {
-        return values.username && values.username.length && values.isUsernameAvailable;
+        return username && username.length && isUsernameAvailable;
     }
 
     const createUsernameErrorMessage = () => {
         let errorMessage = "";
-        if (values.username.length && !values.isUsernameAvailable) {
+        if (username.length && isUsernameAvailable !== null && !isUsernameAvailable) {
             errorMessage = "Username not available.";
         }
         return errorMessage;
     }
 
     const handleSignup = () => {
-        console.log('signing up with values: ', values);
+        console.log('signing up with values: ', email, username, password);
         // dispatch(signup())
     }
     
-    const handleSetEmail = debounce(async (email: string) => {
+    const handleSetEmail = (email: string) => {
+        setEmail(email);
+        checkEmailAvailability(email);
+    };
+
+    const checkEmailAvailability = debounce(async (email: string) => {
         if (isEmail(email)) {
             const isEmailAvailable = await UserAPI.isEmailAvailable(email);
-            setValues({...values, isEmailAvailable});
+            // setValues({...values, isEmailAvailable});
+            setIsEmailAvailable(isEmailAvailable);
         }
     }, 300);
 
-    const handleSetUsername = debounce(async (username: string) => {
+    const handleSetUsername = (username: string) => {
+        setUsername(username);
+        checkUsernameAvailability(username);
+    };
+
+    const checkUsernameAvailability = debounce(async (username: string) => {
         if (username && username.length) {
             const isUsernameAvailable = await UserAPI.isUsernameAvailable(username);
-            setValues({...values, isUsernameAvailable});
+            // setValues({...values, isUsernameAvailable});
+            setIsUsernameAvailable(isUsernameAvailable);
         }
     }, 300);
 
@@ -115,10 +141,10 @@ function Signup({ showLogin }: ISignupProps) {
                         fullWidth
                         label="Email"
                         variant="outlined"
-                        error={values.isEmailTouched && !isEmailValid()}
-                        helperText={values.isEmailTouched && createEmailErrorMessage()}
-                        onChange={handleChange('email')}
-                        onFocus={() => setValues({...values, isEmailTouched: true})}
+                        error={isEmailTouched && !isEmailValid()}
+                        helperText={isEmailTouched && createEmailErrorMessage()}
+                        onChange={e => handleSetEmail(e.target.value)}
+                        onFocus={() => setIsEmailTouched(true)}
                     />
                 </Box>
                 <Box m={2}>
@@ -127,10 +153,10 @@ function Signup({ showLogin }: ISignupProps) {
                         fullWidth
                         label="Desired username"
                         variant="outlined"
-                        error={values.isUsernameTouched && !isUsernameValid()}
-                        helperText={values.isUsernameTouched && createUsernameErrorMessage()}
-                        onChange={handleChange('username')}
-                        onFocus={() => setValues({...values, isUsernameTouched: true})}
+                        error={isUsernameTouched && !isUsernameValid()}
+                        helperText={isUsernameTouched && createUsernameErrorMessage()}
+                        onChange={e => handleSetUsername(e.target.value)}
+                        onFocus={() => setIsUsernameTouched(true)}
                     />
                 </Box>
                 <Box m={2}>
@@ -138,7 +164,7 @@ function Signup({ showLogin }: ISignupProps) {
                         required
                         fullWidth
                         label="Password"
-                        type={values.showPassword ? 'text' : 'password'}
+                        type={showPassword ? 'text' : 'password'}
                         variant="outlined"
                         InputProps={{
                             endAdornment: (
@@ -147,12 +173,12 @@ function Signup({ showLogin }: ISignupProps) {
                                         aria-label="toggle password visibility"
                                         onClick={handleClickShowPassword}
                                     >
-                                        {values.showPassword ? <Visibility /> : <VisibilityOff />}
+                                        {showPassword ? <Visibility /> : <VisibilityOff />}
                                     </IconButton>
                                 </InputAdornment>
                             )
                         }}
-                        onChange={handleChange('password')}
+                        onChange={e => setPassword(e.target.value)}
                     />
                 </Box>
             </Box>
