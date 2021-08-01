@@ -1,11 +1,14 @@
-// const connectionString =
 const User = require('../schemas/UserSchema');
 
-async function findUser(username) {
+async function findUserByUsername(username) {
     return await User.findOne({ username })
 }
 
+async function findUserByEmail(email) {
+    return await User.findOne({ email })
+}
+
 module.exports = {
-    findUser,
-    // createUser
+    findUserByUsername,
+    findUserByEmail
 }
