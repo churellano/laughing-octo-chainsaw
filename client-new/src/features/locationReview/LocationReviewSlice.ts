@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import type { RootState } from '../../app/store';
 import { ILocationReview } from '../../interfaces/ILocationReview';
-import { findLocationReviews } from '../../services/LocationReviewService';
+import LocationReviewAPI from '../../api/LocationReview';
 
 interface LocationReviewState {
     selectedLocationReviews: Array<ILocationReview>;
@@ -16,7 +16,7 @@ const initialState: LocationReviewState = {
 }
 
 export const fetchLocationReviews = createAsyncThunk('locationReview/fetchLocationReviews', async (locationId: string) => {
-    const response = await findLocationReviews(locationId);
+    const response = await LocationReviewAPI.get(locationId);
     return response;
 });
 

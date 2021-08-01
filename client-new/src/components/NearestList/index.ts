@@ -1,2 +1,1 @@
-import NearestList from './NearestList';
-export default NearestList;
+export { default } from './NearestList';

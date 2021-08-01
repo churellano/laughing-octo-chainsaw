@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '../../app/store';
 import { ILocationDetails } from '../../interfaces/ILocationDetails';
-import { findLocationDetails } from '../../services/LocationDetailsService';
+import LocationDetailsAPI from '../../api/LocationDetails';
 
 interface LocationDetailsState {
     selectedPlaceId: string | null;
@@ -20,8 +20,7 @@ const initialState: LocationDetailsState = {
 }
 
 export const fetchLocationDetails = createAsyncThunk('locationDetails/fetchLocationDetails', async (placeId: string) => {
-    const response = await findLocationDetails(placeId);
-    // console.log('response', response)
+    const response = await LocationDetailsAPI.getOne(placeId);
     return response;
 });
 

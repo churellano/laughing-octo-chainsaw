@@ -68,7 +68,7 @@ const decimalToPercent = (decimal: number) => Math.floor(decimal * 100);
 
 function NearestList() {
     return (
-        <Box mr={2}>
+        <Box mr={2} style={{ 'maxWidth': '30%', 'width': '30%' }}>
             <Paper variant='outlined'>
                 <Box p={1}>
                     <Typography variant='h5'>Nearest washrooms</Typography>

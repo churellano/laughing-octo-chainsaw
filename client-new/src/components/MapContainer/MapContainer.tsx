@@ -84,6 +84,7 @@ class MapContainer extends Component<any, MapState> {
                     onClick={(e: google.maps.MapMouseEvent | google.maps.IconMouseEvent) => ('placeId' in e) && this.findPlaceById(e.placeId)}
                     onLoad={map => this.setState({ map })}
                 >
+                    
                 </GoogleMap>
             </LoadScript>
         );

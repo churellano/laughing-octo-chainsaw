@@ -1,2 +1,1 @@
-import LocationDetails from './LocationDetails';
-export default LocationDetails;
+export { default } from './LocationDetails';;

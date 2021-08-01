@@ -1,4 +1,4 @@
-import { List, ListItem, ListItemText, Typography } from "@material-ui/core";
+import { Button, List, ListItem, ListItemText, Typography } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
 import { green } from '@material-ui/core/colors';
@@ -23,6 +23,7 @@ import {
     fetchLocationReviews,
     selectLocationReviews,
 } from '../../features/locationReview/LocationReviewSlice'
+import SubmitReviewModal from "../SubmitReviewModal";
 
 const decimalToPercent = (decimal: number) => Math.floor(decimal * 100);
 
@@ -68,7 +69,9 @@ const renderPage = (locationDetails: ILocationDetails) => (
                         <ListItemText primary={buildRecommendString(locationDetails)}/>
                     </ListItem>
                 </List>
-                <Divider />
+
+                <SubmitReviewModal locationName={locationDetails.name}/>
+
             </Paper>
         </Box>
         { locationDetails.reviews && locationDetails.reviews.length > 0 && renderReviews(locationDetails.reviews) }
@@ -115,7 +118,7 @@ function LocationDetails() {
     }
 
     return (
-        <Box ml={2}>
+        <Box ml={2} style={{ 'maxWidth': '30%', 'width': '30%' }}>
             {content}
         </Box>
     ) ;

@@ -1,2 +1,1 @@
-import LocationReview from './LocationReview';
-export default LocationReview;
+export { default } from './LocationReview';
