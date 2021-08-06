@@ -5,7 +5,9 @@ var router = express.Router();
 
 const {
   findUserByUsername,
-  findUserByEmail
+  findUserByEmail,
+  signup,
+  login
 } = require('../queries/UserQueries');
 
 /* GET User by username. */
@@ -33,6 +35,13 @@ router.get('/isEmailAvailable/:email', async (req, res) => {
 
   console.log('isEmailAvailable', email, User);
   res.send(!User);
+});
+
+/* Signup */
+router.post('/signup', async (req, res) => {
+  console.log('signup request', req.body);
+  const newUser = await signup(req.body);
+  res.send(newUser);
 });
 
 module.exports = router;
