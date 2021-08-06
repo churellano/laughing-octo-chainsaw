@@ -7,9 +7,10 @@ import IconButton from '@material-ui/core/IconButton';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import UserAPI from '../../api/User';
-import signup from '../../features/user/UserSlice';
+import { signup } from '../../features/user/UserSlice';
 import isEmail from 'validator/lib/isEmail';
 import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 
 interface ISignupProps {
     showLogin: () => void
@@ -27,22 +28,13 @@ interface ISignupState {
 };
 
 function Signup({ showLogin }: ISignupProps) {
-    // const [values, setValues] = useState<ISignupState>({
-    //     email: '',
-    //     username: '',
-    //     password: '',
-    //     isEmailTouched: false,
-    //     isEmailAvailable: false,
-    //     isUsernameTouched: false,
-    //     isUsernameAvailable: false,
-    //     showPassword: false
-    // });
+    const dispatch = useDispatch();
 
     const [email, setEmail] = useState<string>('');
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [isEmailTouched, setIsEmailTouched] = useState<boolean>(false);
-    const [isEmailAvailable, setIsEmailAvailable] = useState<boolean>(false);
+    const [isEmailAvailable, setIsEmailAvailable] = useState<boolean | null>(null);
     const [isUsernameTouched, setIsUsernameTouched] = useState<boolean>(false);
     const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
     const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -64,28 +56,19 @@ function Signup({ showLogin }: ISignupProps) {
     //     }
     // };
 
-    const handleClickShowPassword = () => {
-        // setValues({ ...values, showPassword: !values.showPassword });
-        setShowPassword(!setShowPassword);
-    };
-
-    const isEmailValid = () => {
-        return isEmail(email) && isEmailAvailable;
-    }
+    const isEmailValid = () => isEmail(email) && isEmailAvailable;
 
     const createEmailErrorMessage = () => {
         let errorMessage = "";
         if (email && email.length > 0 && !isEmail(email)) {
             errorMessage = "Invalid email format.";
-        } else if (email && email.length && !isEmailAvailable) {
+        } else if (email && email.length && isEmailAvailable !== null && !isEmailAvailable) {
             errorMessage = "Email not available."
         }
         return errorMessage;
     }
 
-    const isUsernameValid = () => {
-        return username && username.length && isUsernameAvailable;
-    }
+    const isUsernameValid = () => username && username.length && isUsernameAvailable;
 
     const createUsernameErrorMessage = () => {
         let errorMessage = "";
@@ -97,7 +80,7 @@ function Signup({ showLogin }: ISignupProps) {
 
     const handleSignup = () => {
         console.log('signing up with values: ', email, username, password);
-        // dispatch(signup())
+        dispatch(signup({ email, username, password }));
     }
     
     const handleSetEmail = (email: string) => {
@@ -126,6 +109,14 @@ function Signup({ showLogin }: ISignupProps) {
         }
     }, 300);
 
+    const canSubmit = () => {
+        const isEmailValid = isEmail(email) && isEmailAvailable;
+        const isUsernameValid = username && isUsernameAvailable;
+        const isPasswordValid = true // TODO
+
+        return isEmailValid && isUsernameValid && isPasswordValid;
+    }
+
     return (
         <Paper variant='outlined'>
             <Box p={2}>
@@ -144,7 +135,7 @@ function Signup({ showLogin }: ISignupProps) {
                         error={isEmailTouched && !isEmailValid()}
                         helperText={isEmailTouched && createEmailErrorMessage()}
                         onChange={e => handleSetEmail(e.target.value)}
-                        onFocus={() => setIsEmailTouched(true)}
+                        onBlur={() => setIsEmailTouched(true)}
                     />
                 </Box>
                 <Box m={2}>
@@ -156,7 +147,7 @@ function Signup({ showLogin }: ISignupProps) {
                         error={isUsernameTouched && !isUsernameValid()}
                         helperText={isUsernameTouched && createUsernameErrorMessage()}
                         onChange={e => handleSetUsername(e.target.value)}
-                        onFocus={() => setIsUsernameTouched(true)}
+                        onBlur={() => setIsUsernameTouched(true)}
                     />
                 </Box>
                 <Box m={2}>
@@ -171,7 +162,7 @@ function Signup({ showLogin }: ISignupProps) {
                                 <InputAdornment position="end">
                                     <IconButton
                                         aria-label="toggle password visibility"
-                                        onClick={handleClickShowPassword}
+                                        onClick={() => setShowPassword(!showPassword)}
                                     >
                                         {showPassword ? <Visibility /> : <VisibilityOff />}
                                     </IconButton>
@@ -185,7 +176,7 @@ function Signup({ showLogin }: ISignupProps) {
 
             <Box p={2} display='flex' justifyContent='space-between'>
                 <Button color='primary' onClick={showLogin}>Sign in instead</Button>
-                <Button variant='contained' color='primary' onClick={handleSignup}>Sign up</Button>
+                <Button variant='contained' color='primary' onClick={handleSignup} disabled={!canSubmit()}>Sign up</Button>
             </Box>
             
         </Paper>
