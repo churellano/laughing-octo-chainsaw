@@ -22,6 +22,7 @@ import {
 import {
     fetchLocationReviews,
     selectLocationReviews,
+    selectLocationReviewsStatus,
 } from '../../features/locationReview/LocationReviewSlice'
 import SubmitReviewModal from "../SubmitReviewModal";
 
@@ -47,7 +48,7 @@ const calculateScore = (upvotes: number, downvotes: number) => (upvotes) / (upvo
 const renderReviews = (locationReviews: Array<ILocationReview>) => (
     <Box m={1} style={{'width': '100%'}}>
         <Paper variant='outlined'>
-            <LocationReviews reviews={locationReviews} />
+            <LocationReviews locationReviews={locationReviews} />
         </Paper>
     </Box>
 )
@@ -70,7 +71,12 @@ const renderPage = (locationDetails: ILocationDetails) => (
                     </ListItem>
                 </List>
 
-                <SubmitReviewModal locationName={locationDetails.name}/>
+                <SubmitReviewModal
+                    id={locationDetails._id}
+                    placeId={locationDetails.placeId}
+                    name={locationDetails.name}
+                    address={locationDetails.address}
+                />
 
             </Paper>
         </Box>
@@ -93,11 +99,18 @@ function LocationDetails() {
     const locationDetailsFromMaps = useSelector(selectLocationDetailsFromMaps);
     const error = useSelector(selectLocationDetailsError);
     const locationReviews = useSelector(selectLocationReviews);
+    const locationReviewsStatus = useSelector(selectLocationReviewsStatus);
 
     useEffect(() => {
         if (placeId && !locationDetails) {
             dispatch(fetchLocationDetails(placeId));
-        } else if (placeId && locationDetails && placeId === locationDetails.placeId && locationReviews.length === 0) {
+        } else if (
+            placeId &&
+            locationDetails &&
+            placeId === locationDetails.placeId &&
+            locationDetails._id &&
+            locationReviewsStatus === 'idle'
+        ) {
             // Only check for reviews if the location is known to the database
             dispatch(fetchLocationReviews(locationDetails._id));
         }
