@@ -8,7 +8,7 @@ export interface LoginOrSignupProps {
     initialIndex: number
 };
 
-function LoginOrSignup({ initialIndex, ...props }: LoginOrSignupProps) {
+function LoginOrSignup({ initialIndex }: LoginOrSignupProps) {
     const [index, setIndex] = useState(initialIndex);
 
     const showSignUp = () => {
