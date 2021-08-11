@@ -17,6 +17,7 @@ var app = express();
 const db = require('./.api-keys').MongoDbConnectionString;
 
 //Connect to mongo
+mongoose.set('useCreateIndex', true);
 mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB Connected...'))
   .catch(err => console.log(err));
