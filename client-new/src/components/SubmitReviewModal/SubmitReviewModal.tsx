@@ -1,13 +1,21 @@
 import { useState, Fragment, useCallback } from 'react';
-import { Box, Button, IconButton, Modal, Paper, TextField, Typography } from "@material-ui/core";
+import { Box, Button, Divider, IconButton, Modal, Paper, TextField, Typography } from "@material-ui/core";
 import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import ThumbDownIcon from '@material-ui/icons/ThumbDown';
 import { green } from '@material-ui/core/colors';
 import { red } from '@material-ui/core/colors';
+import { useDispatch, useSelector } from 'react-redux';
+import { submitLocationReview } from '../../features/locationReview/LocationReviewSlice';
+import { ILocationReview } from '../../interfaces/ILocationReview';
+import { selectLoggedInUser } from '../../features/user/UserSlice';
+import { ILocationDetails } from '../../interfaces/ILocationDetails';
 
 
 interface SubmitReviewModalProps {
-    locationName: string;
+    id: string | null;
+    placeId: string;
+    name: string;
+    address: string;
 }
 
 const renderRecommendationButtons = (recommendLocation: boolean | null) => {
@@ -27,19 +35,103 @@ const renderRecommendationButtons = (recommendLocation: boolean | null) => {
     return [thumbUpIcon, thumbDownIcon];
 }
 
-const submitReview = () => {
-    console.log('submitReview');
-}
-
 function SubmitReviewModal(props: SubmitReviewModalProps) {
-    const [open, setOpen] = useState(false);
-    const [recommendLocation, setRecommendLocation] = useState<boolean | null>(null);
-    const [thumbUpIcon, thumbDownIcon] = renderRecommendationButtons(recommendLocation);
+    const dispatch = useDispatch();
 
-    const handleSubmit = useCallback(() => {
+    const [open, setOpen] = useState(false);
+    const [recommend, setRecommend] = useState<boolean | null>(null);
+    const [description, setDescription] = useState<string>('');
+
+    const loggedInUser = useSelector(selectLoggedInUser);
+
+    const [thumbUpIcon, thumbDownIcon] = renderRecommendationButtons(recommend);
+
+    const handleCancel = () => {
+        console.log('handlecancel')
+        setRecommend(null);
+        setDescription('');
         setOpen(false);
-        submitReview();
-    }, []);
+    }
+
+    const allowSubmit = () => recommend !== null && description;
+
+    const handleSubmit = () => {
+        let locationDetails;
+        if (props.id) {
+            locationDetails = {
+                _id: props.id,
+            };
+        } else {
+            locationDetails = {
+                _id: null,
+                placeId: props.placeId,
+                name: props.name,
+                address: props.address
+            };
+        }
+
+        const locationReview = {
+            locationDetails: locationDetails as ILocationDetails,
+            user: loggedInUser,
+            recommend,
+            description
+        } as ILocationReview;
+
+        console.log('handleSubmit', locationReview);
+        dispatch(submitLocationReview(locationReview))
+        setOpen(false);
+    };
+
+    const renderLoginPrompt = () => (
+        <Fragment>
+            <Typography variant='h5' component='div'>Sign in to write a review.</Typography>
+            <Box mt={2} mb={2}>
+                <Divider />
+            </Box>
+            <Button variant="contained" color="primary" href="/login">Login</Button>
+        </Fragment>
+    )
+
+    const renderReviewForm = () => (
+        <Fragment>
+            <Typography variant='h5' component='div'>Reviewing</Typography>
+            <Typography variant='h3' component='div'>{props.name}</Typography>
+
+            <Box display='flex' justifyContent='center' m={2}>
+                <IconButton onClick={() => setRecommend(true)}>
+                    {thumbUpIcon}
+                </IconButton>
+                <IconButton onClick={() => setRecommend(false)}>
+                    {thumbDownIcon}
+                </IconButton>
+            </Box>
+            
+            <Box m={2}>
+                <TextField
+                    fullWidth
+                    placeholder="Share your experience with this washroom"
+                    multiline
+                    rows={4}
+                    variant="outlined"
+                    onChange={e => setDescription(e.target.value)}
+                />
+            </Box>
+            
+            <Box display="flex" justifyContent='flex-end' m={2}>
+                <Box mr={2}>
+                    <Button variant="contained" onClick={handleCancel}>Cancel</Button>
+                </Box>
+                <Button variant="contained" color="primary" disabled={!allowSubmit()} onClick={handleSubmit}>Submit</Button>
+            </Box>
+        </Fragment>
+    );
+
+    let content;
+    if (loggedInUser) {
+        content = renderReviewForm();
+    } else {
+        content = renderLoginPrompt();
+    }
 
     return (
         <Fragment>
@@ -50,39 +142,12 @@ function SubmitReviewModal(props: SubmitReviewModalProps) {
             </Box>
             <Modal
                 open={open}
-                onClose={() => setOpen(false)}
+                onClose={handleCancel}
                 style={{ display:'flex', alignItems:'center', justifyContent:'center' }}
             >
                 <Paper>
                     <Box p={2}>
-                        <Typography variant='h5' component='div'>Reviewing</Typography>
-                        <Typography variant='h3' component='div'>{props.locationName}</Typography>
-
-                        <Box display='flex' justifyContent='center' m={2}>
-                            <IconButton onClick={() => setRecommendLocation(true)}>
-                                {thumbUpIcon}
-                            </IconButton>
-                            <IconButton onClick={() => setRecommendLocation(false)}>
-                                {thumbDownIcon}
-                            </IconButton>
-                        </Box>
-                        
-                        <Box m={2}>
-                            <TextField
-                                fullWidth
-                                placeholder="Share your experience with this washroom"
-                                multiline
-                                rows={4}
-                                variant="outlined"
-                            />
-                        </Box>
-                        
-                        <Box display="flex" justifyContent='flex-end' m={2}>
-                            <Box mr={2}>
-                                <Button variant="contained" onClick={() => setOpen(false)}>Cancel</Button>
-                            </Box>
-                            <Button variant="contained" color="primary" onClick={handleSubmit}>Submit</Button>
-                        </Box>
+                        {content}
                     </Box>
                 </Paper>
             </Modal>
