@@ -2,7 +2,7 @@ import { GOOGLE_API_KEY } from '../../.api-keys';
 import { GoogleMap, LoadScript, } from '@react-google-maps/api';
 import { Component } from 'react';
 import { Libraries } from '@react-google-maps/api/dist/utils/make-load-script-url';
-import { setSelectedPlaceId, setSelectedLocationDetailsFromMaps } from '../../features/locationDetails/LocationDetailsSlice';
+import { setSelectedPlaceId, setSelectedLatLng, setSelectedLocationDetailsFromMaps, fetchNearestLocationDetails } from '../../features/locationDetails/LocationDetailsSlice';
 import { clearSelectedLocationReviews } from '../../features/locationReview/LocationReviewSlice';
 import { connect } from 'react-redux';
 
@@ -39,6 +39,24 @@ class MapContainer extends Component<any, MapState> {
         };
     }
 
+    handleClick = (e: google.maps.MapMouseEvent | google.maps.IconMouseEvent) => {
+        const lat = e.latLng?.lat();
+        const lng = e.latLng?.lng();
+        console.log('handleClick', lat, lng);
+        if (e && e.latLng && lat && lng) {
+            this.setState({lat, lng});
+            this.props.fetchNearestLocationDetails({
+                type: "Point",
+                coordinates: [lng, lat]
+            });
+            this.props.setSelectedLatLng(new google.maps.LatLng(lat, lng));
+        }
+
+        if ('placeId' in e) {
+            this.findPlaceById(e.placeId);
+        }
+    }
+
     // Retrieves information about a named location on Google Maps
     findPlaceById = (placeId: string | null) => {
         console.log('Looking for place with Id: ', placeId);
@@ -70,6 +88,11 @@ class MapContainer extends Component<any, MapState> {
                 }, () => {
                     this.state.map?.setCenter({ lat: this.state.lat, lng: this.state.lng });
                 });
+                this.props.fetchNearestLocationDetails({
+                    type: "Point",
+                    coordinates: [position.coords.longitude, position.coords.latitude]
+                });
+                this.props.setSelectedLatLng(new google.maps.LatLng(position.coords.latitude, position.coords.longitude));
             });
         }
     }
@@ -81,7 +104,7 @@ class MapContainer extends Component<any, MapState> {
                     mapContainerStyle={containerStyle}
                     center={{lat: this.state.lat, lng: this.state.lng}}
                     zoom={15}
-                    onClick={(e: google.maps.MapMouseEvent | google.maps.IconMouseEvent) => ('placeId' in e) && this.findPlaceById(e.placeId)}
+                    onClick={(e: google.maps.MapMouseEvent | google.maps.IconMouseEvent) => this.handleClick(e)}
                     onLoad={map => this.setState({ map })}
                 >
                     
@@ -98,8 +121,10 @@ class MapContainer extends Component<any, MapState> {
   
 const mapDispatchToProps = {
     setSelectedPlaceId,
+    setSelectedLatLng,
     setSelectedLocationDetailsFromMaps,
-    clearSelectedLocationReviews
+    clearSelectedLocationReviews,
+    fetchNearestLocationDetails
 }
 
 export default connect(null, mapDispatchToProps)(MapContainer);
