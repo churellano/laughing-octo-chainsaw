@@ -12,61 +12,20 @@ import { red } from '@material-ui/core/colors';
 import { computeDistanceBetween } from 'spherical-geometry-js';
 import { Paper } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
-
-const nearestList = [
-    {
-        name: 'McDonalds',
-        address: '9638 160 St, Surrey, BC',
-        distance: 0.14,
-        score: 0.49,
-        reviews: [
-            {
-                description: 'nothing special, usually clean',
-                recommend: true
-            }
-        ]
-    },
-    {
-        name: 'Chevron',
-        address: '9610 160 St, Surrey, BC',
-        distance: 0.1,
-        score: 0.85,
-        reviews: [
-            {
-                description: 'usually cleaner than the mcdonalds next door',
-                recommend: true
-            }
-        ]
-    },
-    {
-        name: 'North Surrey Community Park',
-        address: '15898 97a Ave, Surrey, BC',
-        distance: 1.4,
-        score: 0.8,
-        reviews: [
-            {
-                description: 'not maintained very often',
-                recommend: false
-            }
-        ]
-    },
-    {
-        name: 'Simon Fraser University - Surrey Campus',
-        address: '13450 102 Ave #250, Surrey, BC',
-        distance: 5.3,
-        score: 0.9,
-        reviews: [
-            {
-                description: 'Use the secluded ones on the main galleria, nestled in the hallways by the theatre',
-                recommend: true
-            }
-        ]
-    }
-]
+import { useSelector } from 'react-redux';
+import { selectLatLng, selectNearestLocationDetails } from '../../features/locationDetails/LocationDetailsSlice';
+import { ILocationDetails } from '../../interfaces/ILocationDetails';
+import { Point } from 'geojson';
 
 const decimalToPercent = (decimal: number) => Math.floor(decimal * 100);
 
 function NearestList() {
+    const nearestLocationDetails = useSelector(selectNearestLocationDetails);
+    const currentLatLng = useSelector(selectLatLng);
+
+    const calculateScore = (locationDetails: ILocationDetails) => locationDetails.upvotes / (locationDetails.upvotes + locationDetails.downvotes);
+    const pointToLatLng = (point: Point) => new google.maps.LatLng(point.coordinates[1], point.coordinates[0]);
+
     return (
         <Box mr={2} style={{ 'maxWidth': '30%', 'width': '30%' }}>
             <Paper variant='outlined'>
@@ -75,28 +34,28 @@ function NearestList() {
                 </Box>
                 <List style={{ 'minWidth': '20%' }}>
                     {
-                        nearestList.map((location, index) => (
+                        nearestLocationDetails.map((locationDetails: ILocationDetails, index) => (
                             <Fragment>
                                 <ListItem alignItems="flex-start">
                                     <ListItemText
-                                        primary={location.name}
+                                        primary={locationDetails.name}
                                         secondary={
                                             <Box component='div' display='flex' flexDirection='row' justifyContent='space-between' alignItems='center'>
-                                                <span>{location.distance} km</span>
+                                                <span>{currentLatLng && (computeDistanceBetween(currentLatLng, pointToLatLng(locationDetails.point)) / 1000).toFixed(2)} km</span>
                                                 <div style={{
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     flexWrap: 'wrap',
                                                 }}>
-                                                    <span>{decimalToPercent(location.score)}%</span>
-                                                    {location.score > 0.5 ? <ThumbUpIcon fontSize='small' style={{ color: green[500] }}/> : <ThumbDownIcon fontSize='small' style={{ color: red[500] }}/>}
+                                                    <span>{decimalToPercent(calculateScore(locationDetails))}%</span>
+                                                    {calculateScore(locationDetails) > 0.5 ? <ThumbUpIcon fontSize='small' style={{ color: green[500] }}/> : <ThumbDownIcon fontSize='small' style={{ color: red[500] }}/>}
                                                 </div>
                                             </Box>
                                         }
                                     />
                                 </ListItem>
                                 {/* Only place dividers between list items */}
-                                {(index + 1 === nearestList.length) ? null : <Divider />}
+                                {(index + 1 === nearestLocationDetails.length) ? null : <Divider />}
                             </Fragment>
                         ))
                     }
