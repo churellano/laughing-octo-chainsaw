@@ -1,7 +1,10 @@
 const mongoose = require('mongoose');
 
 const schema = mongoose.Schema({
-	locationId: mongoose.Schema.Types.ObjectId,
+    locationDetails: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'LocationDetails'
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
