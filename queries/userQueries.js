@@ -1,4 +1,6 @@
 const User = require('../schemas/UserSchema');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 async function findUserByUsername(username) {
     return await User.findOne({ username })
@@ -9,14 +11,14 @@ async function findUserByEmail(email) {
 }
 
 async function signup(newUser) {
-    return await User.create(newUser, (err) => {
-        if (err) console.log('ERROR', err);
-    });
+    const passwordHash = await bcrypt.hash(newUser.password, saltRounds);
+    return await User.create({ ...newUser, password: passwordHash});
 }
 
-async function login({ username, password }) {
-    const existingUser = User.findOne({ username });
-    return !!existingUser && existingUser.password === password;
+async function login({ identifier, password }) {
+    const existingUser = await User.findOne({ email: identifier }) || await User.findOne({ username: identifier });
+    const match = await bcrypt.compare(password, existingUser.password);
+    return !!existingUser && match && existingUser;
 }
 
 module.exports = {
