@@ -1,13 +1,10 @@
-import { Box, Typography, List, ListItem, ListItemAvatar, Avatar, ListItemText, Divider } from "@material-ui/core";
+import { Box, Typography, List, Divider } from "@material-ui/core";
 import { ILocationReview } from "../../interfaces/ILocationReview";
 import { Fragment } from 'react';
-
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-dayjs.extend(relativeTime);
+import LocationReview from "../LocationReview";
 
 interface LocationReviewsProps {
-    reviews: Array<ILocationReview>;
+    locationReviews: Array<ILocationReview>;
 }
 
 function LocationReviews(props: LocationReviewsProps) {
@@ -16,26 +13,12 @@ function LocationReviews(props: LocationReviewsProps) {
             <Typography align='left'>Recent reviews</Typography>
             <List>
                 {
-                   props.reviews.map((review: ILocationReview, index) => (
-                            <Fragment key={review.locationId}>
-                                <ListItem>
-                                    <ListItemAvatar>
-                                        <Avatar>{review.user.username.split('')[0]}</Avatar>
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                        primary={review.user.username}
-                                        secondary={
-                                            <Fragment>
-                                                <Typography component="div" variant="body2" color="textSecondary">{dayjs().to(review.postedDate)}</Typography>
-                                                <Typography component="div" variant="body2" color="textPrimary">{review.description}</Typography>
-                                            </Fragment>
-                                        }>
-                                    </ListItemText>
-                                </ListItem>
-                                {/* Only place dividers between list items */}
-                                {(index + 1 === props.reviews.length) ? null : <Divider />}
-                            </Fragment>
-                        ))
+                   props.locationReviews.map((locationReview: ILocationReview, index) => (
+                        <Fragment key={locationReview._id}>
+                            <LocationReview locationReview={locationReview}/>
+                            {(index + 1 === props.locationReviews.length) ? null : <Divider />}
+                        </Fragment>
+                    ))
                 }
             </List>
         </Box>
