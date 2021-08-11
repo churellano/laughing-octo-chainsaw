@@ -44,4 +44,11 @@ router.post('/signup', async (req, res) => {
   res.send(newUser);
 });
 
+/* Signup */
+router.post('/login', async (req, res) => {
+  console.log('login request', req.body);
+  const isLoginSuccessful = await login(req.body);
+  res.send(isLoginSuccessful);
+});
+
 module.exports = router;
