@@ -7,10 +7,11 @@ import IconButton from '@material-ui/core/IconButton';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import UserAPI from '../../api/User';
-import { signup } from '../../features/user/UserSlice';
+import { selectLoggedInUser, signup } from '../../features/user/UserSlice';
 import isEmail from 'validator/lib/isEmail';
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { Redirect } from "react-router-dom";
 
 interface ISignupProps {
     showLogin: () => void
@@ -39,22 +40,7 @@ function Signup({ showLogin }: ISignupProps) {
     const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
     const [showPassword, setShowPassword] = useState<boolean>(false);
 
-    // useEffect(() => {
-    //     console.log('Changes: ', email, username, password);
-    // }, [email, username, password]);
-
-    // const handleChange = (prop: keyof ISignupState) => (event: ChangeEvent<HTMLInputElement>) => {
-    //     console.log(event.target.value);
-    //     setValues({ ...values, [prop]: event.target.value });
-    //     switch(prop) {
-    //         case 'email':
-    //             handleSetEmail(event.target.value);
-    //             break;
-    //         case 'username':
-    //             handleSetUsername(event.target.value);
-    //             break;
-    //     }
-    // };
+    const loggedInUser = useSelector(selectLoggedInUser);
 
     const isEmailValid = () => isEmail(email) && isEmailAvailable;
 
@@ -115,6 +101,10 @@ function Signup({ showLogin }: ISignupProps) {
         const isPasswordValid = true // TODO
 
         return isEmailValid && isUsernameValid && isPasswordValid;
+    }
+
+    if (loggedInUser) {
+        return <Redirect to="/" />
     }
 
     return (
