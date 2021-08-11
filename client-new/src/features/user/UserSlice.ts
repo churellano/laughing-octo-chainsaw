@@ -68,4 +68,4 @@ export default userSlice.reducer;
 
 // Selectors
 export const selectLoggedInUser = (state: RootState) => state.user.loggedInUser;
-export const selectUserError =  (state: RootState) => state.user.error;
+export const selectUserError = (state: RootState) => state.user.error;
