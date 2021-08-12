@@ -1,4 +1,4 @@
-import { GOOGLE_API_KEY } from '../../.api-keys';
+import { GOOGLE_API_KEY } from '../../constants';
 import { GoogleMap, LoadScript, } from '@react-google-maps/api';
 import { Component } from 'react';
 import { Libraries } from '@react-google-maps/api/dist/utils/make-load-script-url';
