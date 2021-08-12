@@ -1,6 +1,5 @@
  import { Box, Button, Paper, TextField, Typography } from "@material-ui/core";
 import RateReviewIcon from '@material-ui/icons/RateReview';
-import { useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";

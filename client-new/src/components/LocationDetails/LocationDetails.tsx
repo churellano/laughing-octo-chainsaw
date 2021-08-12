@@ -1,16 +1,15 @@
-import { Button, List, ListItem, ListItemText, Typography } from "@material-ui/core";
+import { List, ListItem, ListItemText, Typography } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
 import { green } from '@material-ui/core/colors';
 import { red } from '@material-ui/core/colors';
 import RoomIcon from '@material-ui/icons/Room';
 import ThumbsUpDownIcon from '@material-ui/icons/ThumbsUpDown';
-import Divider from '@material-ui/core/Divider';
 
 import LocationReviews from '../LocationReviews';
 import { ILocationDetails } from "../../interfaces/ILocationDetails";
 import { ILocationReview } from "../../interfaces/ILocationReview";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { 
     selectPlaceId,

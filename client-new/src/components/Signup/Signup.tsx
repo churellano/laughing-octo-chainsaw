@@ -1,6 +1,6 @@
 import { Box, Paper, Typography, TextField, Button } from "@material-ui/core";
 import RateReviewIcon from '@material-ui/icons/RateReview';
-import { ChangeEvent, useState } from "react";
+import { useState } from "react";
 import { debounce } from "debounce";
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
@@ -9,23 +9,11 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import UserAPI from '../../api/User';
 import { selectLoggedInUser, signup } from '../../features/user/UserSlice';
 import isEmail from 'validator/lib/isEmail';
-import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 
 interface ISignupProps {
     showLogin: () => void
-};
-
-interface ISignupState {
-    email: string;
-    username: string;
-    password: string;
-    isEmailTouched: boolean;
-    isEmailAvailable: boolean;
-    isUsernameTouched: boolean;
-    isUsernameAvailable: boolean;
-    showPassword: boolean;
 };
 
 function Signup({ showLogin }: ISignupProps) {
@@ -77,7 +65,6 @@ function Signup({ showLogin }: ISignupProps) {
     const checkEmailAvailability = debounce(async (email: string) => {
         if (isEmail(email)) {
             const isEmailAvailable = await UserAPI.isEmailAvailable(email);
-            // setValues({...values, isEmailAvailable});
             setIsEmailAvailable(isEmailAvailable);
         }
     }, 300);
