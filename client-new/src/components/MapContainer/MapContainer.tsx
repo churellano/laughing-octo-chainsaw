@@ -43,6 +43,8 @@ class MapContainer extends Component<any, MapState> {
         const lat = e.latLng?.lat();
         const lng = e.latLng?.lng();
         console.log('handleClick', lat, lng);
+        console.log(process.env);
+        console.log(GOOGLE_API_KEY);
         if (e && e.latLng && lat && lng) {
             this.setState({lat, lng});
             this.props.fetchNearestLocationDetails({
