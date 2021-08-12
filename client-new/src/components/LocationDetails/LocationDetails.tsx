@@ -113,7 +113,7 @@ function LocationDetails() {
             // Only check for reviews if the location is known to the database
             dispatch(fetchLocationReviews(locationDetails._id));
         }
-    }, [dispatch, placeId, locationDetails, locationReviews]);
+    }, [dispatch, placeId, locationDetails, locationReviews, locationReviewsStatus]);
 
     let content;
     if (placeId && !locationDetails && !error) {
