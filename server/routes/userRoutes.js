@@ -8,7 +8,7 @@ const {
   findUserByEmail,
   signup,
   login
-} = require('../queries/UserQueries');
+} = require('../queries/userQueries');
 
 /* GET User by username. */
 router.get('/:username', async (req, res) => {
