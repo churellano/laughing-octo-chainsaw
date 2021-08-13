@@ -48,6 +48,7 @@ function Login({ showSignup }: LoginProps) {
                         label="Password"
                         type="password"
                         variant="outlined"
+                        error={loggedInUser === false}
                         helperText={loggedInUser === false && 'Invalid password. Please try again.'}
                         onChange={e => setPassword(e.target.value)}
                     />
