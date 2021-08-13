@@ -21,7 +21,7 @@ async function createLocationReview({ locationDetails, user, description, recomm
 
   if (locationDetails._id) {
     console.log('review existing location')
-    locationDetailsFromDb = LocationDetails.findOne({ _id: new ObjectId(locationDetails._id) });
+    locationDetailsFromDb = await LocationDetails.findOne({ _id: new ObjectId(locationDetails._id) }).exec();
     locationReview = await LocationReview.create({
       locationDetails: new ObjectId(locationDetails._id),
       user: new ObjectId(user._id),
@@ -35,11 +35,10 @@ async function createLocationReview({ locationDetails, user, description, recomm
       placeId: locationDetails.placeId,
       name: locationDetails.name,
       address: locationDetails.address,
-      lat: locationDetails.lat,
-      lng: locationDetails.lng
+      point: locationDetails.point
     });
 
-    locationReview = LocationReview.create({
+    locationReview = await LocationReview.create({
       locationDetails: new ObjectId(locationDetailsFromDb._id),
       user: new ObjectId(user._id),
       description,
@@ -48,9 +47,15 @@ async function createLocationReview({ locationDetails, user, description, recomm
     });
   }
 
-  recommend ? locationDetailsFromDb.upvotes++ : locationDetailsFromDb.downvotes++;
-  console.log(locationDetailsFromDb);
-  await locationDetailsFromDb.save();
+  const upvotesOrDownvotes = recommend ? 'upvotes' : 'downvotes';
+  await LocationDetails.findOneAndUpdate(
+    { _id: locationDetailsFromDb._id },
+    { 
+      $inc: {
+        [upvotesOrDownvotes]: 1
+      } 
+    }
+  ).exec();
 
   return locationReview;
 }
