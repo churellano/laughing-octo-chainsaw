@@ -18,7 +18,7 @@ async function signup(newUser) {
 async function login({ identifier, password }) {
     const existingUser = await User.findOne({ email: identifier }) || await User.findOne({ username: identifier });
     const match = await bcrypt.compare(password, existingUser.password);
-    return !!existingUser && match && existingUser;
+    return match && existingUser;
 }
 
 module.exports = {
