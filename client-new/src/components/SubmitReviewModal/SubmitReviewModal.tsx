@@ -9,7 +9,7 @@ import { submitLocationReview } from '../../features/locationReview/LocationRevi
 import { ILocationReview } from '../../interfaces/ILocationReview';
 import { selectLoggedInUser } from '../../features/user/UserSlice';
 import { ILocationDetails } from '../../interfaces/ILocationDetails';
-
+import { selectLatLng } from '../../features/locationDetails/LocationDetailsSlice';
 
 interface SubmitReviewModalProps {
     id: string | null;
@@ -45,6 +45,7 @@ function SubmitReviewModal(props: SubmitReviewModalProps) {
     const loggedInUser = useSelector(selectLoggedInUser);
 
     const [thumbUpIcon, thumbDownIcon] = renderRecommendationButtons(recommend);
+    const selectedLatLng = useSelector(selectLatLng);
 
     const handleCancel = () => {
         console.log('handlecancel')
@@ -62,12 +63,18 @@ function SubmitReviewModal(props: SubmitReviewModalProps) {
                 _id: props.id,
             };
         } else {
-            locationDetails = {
-                _id: null,
-                placeId: props.placeId,
-                name: props.name,
-                address: props.address
-            };
+            if (selectedLatLng) {
+                locationDetails = {
+                    _id: null,
+                    placeId: props.placeId,
+                    name: props.name,
+                    address: props.address,
+                    point: {
+                        type: 'Point',
+                        coordinates: [selectedLatLng.lng(), selectedLatLng.lat()]
+                    }
+                };
+            }
         }
 
         const locationReview = {
