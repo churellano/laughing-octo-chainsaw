@@ -1,7 +1,8 @@
-import { Box, Typography, List, Divider } from "@material-ui/core";
+import { Box, Typography, List, Divider, Button } from "@material-ui/core";
 import { ILocationReview } from "../../interfaces/ILocationReview";
 import { Fragment } from 'react';
 import LocationReview from "../LocationReview";
+import LocationReviewsModal from "../LocationReviewsModal";
 
 interface LocationReviewsProps {
     locationReviews: Array<ILocationReview>;
@@ -21,6 +22,7 @@ function LocationReviews(props: LocationReviewsProps) {
                     ))
                 }
             </List>
+            <LocationReviewsModal />
         </Box>
     );
 }
