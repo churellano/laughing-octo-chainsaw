@@ -11,7 +11,7 @@ interface LocationDetailsState {
     selectedLocationDetails: ILocationDetails | null;
     selectedLocationDetailsFromMaps: ILocationDetails | null,
     nearestLocationDetails: Array<ILocationDetails>,
-    // status: 'idle' | 'loading' | 'succeeded' | 'failed',
+    status: 'idle' | 'loading' | 'succeeded' | 'failed',
     error: string | null | undefined
 }
 
@@ -21,7 +21,7 @@ const initialState: LocationDetailsState = {
     selectedLocationDetails: null,
     selectedLocationDetailsFromMaps: null,
     nearestLocationDetails: [],
-    // status: 'idle',
+    status: 'idle',
     error: null
 }
 
@@ -42,6 +42,7 @@ export const locationDetailsSlice = createSlice({
     reducers: {
       setSelectedPlaceId: (state, action: PayloadAction<string>) => {
           state.selectedPlaceId = action.payload;
+          state.status = 'idle';
       },
       setSelectedLatLng: (state, action: PayloadAction<LatLng>) => {
         state.selectedLatLng = action.payload;
@@ -58,16 +59,13 @@ export const locationDetailsSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-          // .addCase(fetchLocationDetails.pending, (state) => {
-          //   state.status = 'loading';
-          // })
           .addCase(fetchLocationDetails.fulfilled, (state, action) => {
-            // state.status = 'succeeded';
+            state.status = 'succeeded';
             state.selectedLocationDetails = action.payload;
             state.error = null;
           })
           .addCase(fetchLocationDetails.rejected, (state, action) => {
-            // state.status = 'failed';
+            state.status = 'failed';
             state.error = action.error.message;
           })
           .addCase(fetchNearestLocationDetails.fulfilled, (state, action) => {
@@ -92,5 +90,5 @@ export const selectLatLng = (state: RootState) => state.locationDetails.selected
 export const selectLocationDetails = (state: RootState) => state.locationDetails.selectedLocationDetails;
 export const selectLocationDetailsFromMaps = (state: RootState) => state.locationDetails.selectedLocationDetailsFromMaps;
 export const selectNearestLocationDetails = (state: RootState) => state.locationDetails.nearestLocationDetails;
-// export const selectLocationDetailsStatus = (state: RootState) => state.locationDetails.status;
+export const selectLocationDetailsStatus = (state: RootState) => state.locationDetails.status;
 export const selectLocationDetailsError =  (state: RootState) => state.locationDetails.error;
