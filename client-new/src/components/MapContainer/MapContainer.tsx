@@ -42,9 +42,6 @@ class MapContainer extends Component<any, MapState> {
     handleClick = (e: google.maps.MapMouseEvent | google.maps.IconMouseEvent) => {
         const lat = e.latLng?.lat();
         const lng = e.latLng?.lng();
-        console.log('handleClick', lat, lng);
-        console.log(process.env);
-        console.log(GOOGLE_API_KEY);
         if (e && e.latLng && lat && lng) {
             this.setState({lat, lng});
             this.props.fetchNearestLocationDetails({
@@ -74,7 +71,7 @@ class MapContainer extends Component<any, MapState> {
                     this.props.setSelectedPlaceId(placeId);
                     this.props.setSelectedLocationDetailsFromMaps(placeResult);
                     this.props.clearSelectedLocationReviews();
-                    this.setState({ placeResult }, () => console.log('result: ', this.state.placeResult));
+                    this.setState({ placeResult });
                 }
             });
         }
