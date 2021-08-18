@@ -3,7 +3,7 @@ const LocationDetails = require('../schemas/locationDetailsSchema');
 const LocationReview = require('../schemas/locationReviewSchema');
 const ObjectId = require('mongoose').Types.ObjectId; 
 
-async function findLocationReviews(locationId) {
+async function getRecentLocationReviews(locationId) {
   console.log('locationId', locationId);
   const locationReviews = await LocationReview
     .find({ locationDetails: new ObjectId(locationId) })
@@ -12,6 +12,19 @@ async function findLocationReviews(locationId) {
     .limit(5);
 
   return locationReviews;
+}
+
+async function getLocationReviewsWithSkip(locationId, skip, limit) {
+  const locationReviews = await LocationReview
+    .find({ locationDetails: new ObjectId(locationId) })
+    .populate('user')
+    .sort({'postedDate': -1})
+    .skip(skip)
+    .limit(limit);
+
+  const count = await LocationReview.find({ locationDetails: new ObjectId(locationId) }).countDocuments();
+
+  return { locationReviews, count };
 }
 
 async function createLocationReview({ locationDetails, user, description, recommend }) {
@@ -61,6 +74,7 @@ async function createLocationReview({ locationDetails, user, description, recomm
 }
 
 module.exports = {
-    findLocationReviews,
-    createLocationReview
+  getRecentLocationReviews,
+  getLocationReviewsWithSkip,
+  createLocationReview
 }
