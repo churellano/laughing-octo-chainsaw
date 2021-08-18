@@ -48,7 +48,6 @@ function SubmitReviewModal(props: SubmitReviewModalProps) {
     const selectedLatLng = useSelector(selectLatLng);
 
     const handleCancel = () => {
-        console.log('handlecancel')
         setRecommend(null);
         setDescription('');
         setOpen(false);
