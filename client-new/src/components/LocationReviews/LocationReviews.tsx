@@ -1,4 +1,4 @@
-import { Box, Typography, List, Divider, Button } from "@material-ui/core";
+import { Box, Typography, List, Divider } from "@material-ui/core";
 import { ILocationReview } from "../../interfaces/ILocationReview";
 import { Fragment } from 'react';
 import LocationReview from "../LocationReview";
