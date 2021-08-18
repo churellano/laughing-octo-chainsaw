@@ -14,8 +14,8 @@ var userRouter = require('./routes/userRoutes');
 var app = express();
 
 // DB Config
-// const db = require('./.api-keys').MongoDbConnectionString;
-const db = process.env.MONGODB_CONNECTION_STRING;
+const db = require('./.api-keys').MongoDbConnectionString;
+// const db = process.env.MONGODB_CONNECTION_STRING;
 
 //Connect to mongo
 mongoose.set('useCreateIndex', true);
