@@ -3,6 +3,8 @@ import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
 import { green } from '@material-ui/core/colors';
 import { red } from '@material-ui/core/colors';
+import { yellow } from '@material-ui/core/colors';
+import { grey } from '@material-ui/core/colors';
 import RoomIcon from '@material-ui/icons/Room';
 import ThumbsUpDownIcon from '@material-ui/icons/ThumbsUpDown';
 
@@ -16,12 +18,13 @@ import {
     fetchLocationDetails,
     selectLocationDetails,
     selectLocationDetailsFromMaps,
+    selectLocationDetailsStatus,
     selectLocationDetailsError
 } from "../../features/locationDetails/LocationDetailsSlice";
 import {
-    fetchLocationReviews,
-    selectLocationReviews,
-    selectLocationReviewsStatus,
+    fetchRecentLocationReviews,
+    selectRecentLocationReviews,
+    selectLocationReviewsStatus
 } from '../../features/locationReview/LocationReviewSlice'
 import SubmitReviewModal from "../SubmitReviewModal";
 
@@ -44,6 +47,31 @@ const buildRecommendString = (locationDetails: ILocationDetails) => {
 
 const calculateScore = (upvotes: number, downvotes: number) => (upvotes) / (upvotes + downvotes);
 
+const scoreColor = (locationDetails: ILocationDetails) => {
+    if (!locationDetails.reviews || locationDetails.reviews.length === 0) {
+        return grey[500];
+    } 
+
+    let color;
+    const score = calculateScore(locationDetails.upvotes, locationDetails.downvotes);
+    if (score > 0.8) {
+        color = green[500];
+    }
+    else if (score > 0.55) {
+        color = green[300];
+    }
+    else if (score > 0.45) {
+        color = yellow[700];
+    }
+    else if (score > 0.2) {
+        color = red[300];
+    } else {
+        color = red[500];
+    }
+
+    return color;
+}
+
 const renderReviews = (locationReviews: Array<ILocationReview>) => (
     <Box m={1} style={{'width': '100%'}}>
         <Paper variant='outlined'>
@@ -65,7 +93,7 @@ const renderPage = (locationDetails: ILocationDetails) => (
                         <ListItemText primary={locationDetails?.address} />
                     </ListItem>
                     <ListItem>
-                        <ThumbsUpDownIcon style={{ color: (calculateScore(locationDetails.upvotes, locationDetails.downvotes) > 0.5) ? green[500] : red[500], 'paddingRight': '12px'}}/>
+                        <ThumbsUpDownIcon style={{ color: scoreColor(locationDetails), 'paddingRight': '12px'}}/>
                         <ListItemText primary={buildRecommendString(locationDetails)}/>
                     </ListItem>
                 </List>
@@ -96,12 +124,13 @@ function LocationDetails() {
     const placeId = useSelector(selectPlaceId);
     const locationDetails = useSelector(selectLocationDetails);
     const locationDetailsFromMaps = useSelector(selectLocationDetailsFromMaps);
+    const locationDetailsStatus = useSelector(selectLocationDetailsStatus);
     const error = useSelector(selectLocationDetailsError);
-    const locationReviews = useSelector(selectLocationReviews);
+    const recentLocationReviews = useSelector(selectRecentLocationReviews);
     const locationReviewsStatus = useSelector(selectLocationReviewsStatus);
 
     useEffect(() => {
-        if (placeId && !locationDetails) {
+        if (placeId && locationDetailsStatus === 'idle') {
             dispatch(fetchLocationDetails(placeId));
         } else if (
             placeId &&
@@ -111,18 +140,18 @@ function LocationDetails() {
             locationReviewsStatus === 'idle'
         ) {
             // Only check for reviews if the location is known to the database
-            dispatch(fetchLocationReviews(locationDetails._id));
+            dispatch(fetchRecentLocationReviews(locationDetails._id));
         }
-    }, [dispatch, placeId, locationDetails, locationReviews, locationReviewsStatus]);
+    }, [dispatch, placeId, locationDetails, locationDetailsStatus, recentLocationReviews, locationReviewsStatus]);
 
     let content;
     if (placeId && !locationDetails && !error) {
         // Data not received yet
         content = renderLoading();
-    } else if (placeId && locationDetails && locationReviews.length > 0 && !error) {
+    } else if (placeId && locationDetails && recentLocationReviews.length > 0 && !error) {
         // Data received with details and reviews
-        content = renderPage({ ...locationDetails, reviews: locationReviews}); 
-    } else if (placeId && locationDetailsFromMaps && locationReviews.length === 0) {
+        content = renderPage({ ...locationDetails, reviews: recentLocationReviews}); 
+    } else if (placeId && locationDetailsFromMaps && recentLocationReviews.length === 0) {
         // Selected location is unknown to database, display data from Maps
         content = renderPage(locationDetailsFromMaps);
     } else if (!locationDetailsFromMaps || error) {
