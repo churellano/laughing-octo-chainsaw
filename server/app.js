@@ -16,7 +16,6 @@ var app = express();
 // DB Config
 // const db = require('./.api-keys').MongoDbConnectionString;
 const db = process.env.MONGODB_CONNECTION_STRING;
-console.log('db', db);
 
 //Connect to mongo
 mongoose.set('useCreateIndex', true);
