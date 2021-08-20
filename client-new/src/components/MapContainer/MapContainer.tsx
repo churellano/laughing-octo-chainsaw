@@ -6,7 +6,6 @@ import { setSelectedPlaceId, setSelectedLatLng, setSelectedLocationDetailsFromMa
 import { clearSelectedLocationReviews } from '../../features/locationReview/LocationReviewSlice';
 import { useDispatch } from 'react-redux';
 import { CircularProgress } from "@material-ui/core";
-import Utility from '../../helpers/utility';
 
 const containerStyle = {
     width: '100%',
