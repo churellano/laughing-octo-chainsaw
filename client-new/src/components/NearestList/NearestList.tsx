@@ -75,7 +75,7 @@ function NearestList() {
                 }
             </List>
         )
-    }  else if (nearestLocationDetailsStatus === 'succeeded' && !nearestLocationDetails.length) {
+    } else if (nearestLocationDetailsStatus === 'succeeded' && !nearestLocationDetails.length) {
         content = <Typography variant='body1'>No locations were found in this area.</Typography>
     } else if (nearestLocationDetailsStatus === 'loading' && navigator.geolocation) {
         content = <CircularProgress />;
