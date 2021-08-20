@@ -3,11 +3,10 @@ import type { RootState } from '../../app/store';
 import { ILocationDetails } from '../../interfaces/ILocationDetails';
 import LocationDetailsAPI from '../../api/LocationDetails';
 import { Point } from 'geojson';
-import { LatLng } from 'spherical-geometry-js';
 
 interface LocationDetailsState {
     selectedPlaceId: string | null;
-    selectedLatLng: LatLng | null;
+    selectedLatLng: google.maps.LatLng | null;
     selectedLocationDetails: ILocationDetails | null;
     selectedLocationDetailsFromMaps: ILocationDetails | null,
     nearestLocationDetails: Array<ILocationDetails>,
@@ -44,7 +43,7 @@ export const locationDetailsSlice = createSlice({
           state.selectedPlaceId = action.payload;
           state.status = 'idle';
       },
-      setSelectedLatLng: (state, action: PayloadAction<LatLng>) => {
+      setSelectedLatLng: (state, action: PayloadAction<google.maps.LatLng>) => {
         state.selectedLatLng = action.payload;
       },
       setSelectedLocationDetailsFromMaps: (state, action: PayloadAction<google.maps.places.PlaceResult>) => {
