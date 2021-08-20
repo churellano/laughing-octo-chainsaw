@@ -1,12 +1,12 @@
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { selectLoggedInUser } from '../../features/user/UserSlice';
 import { useSelector } from 'react-redux';
 import { Button } from '@material-ui/core';
+import { Link } from 'react-router-dom';
+import NavbarDrawer from '../NavbarDrawer';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -24,23 +24,20 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function Navbar() {
     const classes = useStyles();
-
     const loggedInUser = useSelector(selectLoggedInUser);
 
     let endContent;
     if (loggedInUser) {
       endContent = <Typography variant="h6" color="inherit">Hello, {loggedInUser.username}</Typography>;
     } else {
-      endContent = <Button color="inherit" href="/login">Login</Button>;
+      endContent = <Button color="inherit" component={Link} to='/login'>Login</Button>;
     }
 
     return (
         <AppBar position="static" className={classes.root}>
             <Toolbar variant="dense">
-                <IconButton className={classes.menuButton} edge="start" color="inherit" aria-label="menu">
-                    <MenuIcon />
-                </IconButton>
-                <Typography className={classes.title} variant="h6" color="inherit">GottaGo</Typography>
+                <NavbarDrawer />
+                <Typography className={classes.title} variant="h6" color="inherit" component={Link} to='/' style={{textDecoration: 'none'}}>GottaGo</Typography>
                 {endContent}
             </Toolbar>
         </AppBar>
