@@ -1,4 +1,3 @@
-import React from 'react';
 import { useDispatch } from 'react-redux';
 import { setSelectedPlaceId } from '../../features/locationDetails/LocationDetailsSlice';
 import { clearSelectedLocationReviews } from '../../features/locationReview/LocationReviewSlice';
@@ -6,11 +5,28 @@ import { ILocationDetails } from '../../interfaces/ILocationDetails';
 
 import { green } from '@material-ui/core/colors';
 import { red } from '@material-ui/core/colors';
-import Box from '@material-ui/core/Box';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import ThumbDownIcon from '@material-ui/icons/ThumbDown';
+import { useTheme, useMediaQuery, Grid, Typography, createStyles, makeStyles, Theme } from '@material-ui/core';
+import Utility from '../../helpers/utility';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    listItem: {
+        cursor: 'pointer',
+        minWidth: '12rem',
+        paddingBottom: '1rem'
+    },
+    name: {
+        fontSize: '0.9rem'
+    },
+    rating: {
+        display: 'flex',
+        alignItems: 'center',
+    }
+  })
+);
 
 interface NearestListItemProps {
     locationDetails: ILocationDetails;
@@ -20,8 +36,11 @@ interface NearestListItemProps {
 function NearestListItem({ locationDetails, distance }: NearestListItemProps ) {
     const dispatch = useDispatch();
 
-    const calculateScore = (upvotes: number, downvotes: number) => (upvotes) / (upvotes + downvotes);
-    const decimalToPercent = (decimal: number) => Math.floor(decimal * 100);
+    const classes = useStyles();
+    const theme = useTheme();
+    const largeScreen = useMediaQuery(theme.breakpoints.up('md'));
+    
+    const truncateName = (name: string) => name.length > 30 ? name.substring(0, 25) + '...' : name;
 
     const handleClick = (locationDetails: ILocationDetails) => {
         dispatch(setSelectedPlaceId(locationDetails.placeId));
@@ -29,23 +48,24 @@ function NearestListItem({ locationDetails, distance }: NearestListItemProps ) {
     }
 
     return (
-        <ListItem alignItems="flex-start" onClick={() => handleClick(locationDetails)} style={{ cursor: 'pointer' }}>
-            <ListItemText
-                primary={locationDetails.name}
-                secondary={
-                    <Box component='div' display='flex' flexDirection='row' justifyContent='space-between' alignItems='center'>
-                        <span>{distance && distance.toFixed(2)} km</span>
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            flexWrap: 'wrap',
-                        }}>
-                            <span>{decimalToPercent(calculateScore(locationDetails.upvotes, locationDetails.downvotes))}%</span>
-                            {calculateScore(locationDetails.upvotes, locationDetails.downvotes) > 0.5 ? <ThumbUpIcon fontSize='small' style={{ color: green[500] }}/> : <ThumbDownIcon fontSize='small' style={{ color: red[500] }}/>}
-                        </div>
-                    </Box>
-                }
-            />
+        <ListItem 
+            className={classes.listItem}
+            alignItems='center'
+            style={{ height: largeScreen ? '100%' : '6rem'}} 
+            onClick={() => handleClick(locationDetails)}
+        >
+            <Grid container direction='column' justifyContent='space-between' style={{ height: '100%'}}>
+                <Grid item>
+                    <Typography className={classes.name} variant='h6'>{truncateName(locationDetails.name)}</Typography>
+                </Grid>
+                <Grid item container direction='row' justifyContent='space-between'>
+                    <span>{distance && distance.toFixed(2)} km</span>
+                    <div className={classes.rating}>
+                        <span>{Utility.decimalToPercent(Utility.calculateScore(locationDetails.upvotes, locationDetails.downvotes))}%</span>
+                        {Utility.calculateScore(locationDetails.upvotes, locationDetails.downvotes) > 0.5 ? <ThumbUpIcon fontSize='small' style={{ color: green[500] }}/> : <ThumbDownIcon fontSize='small' style={{ color: red[500] }}/>}
+                    </div>
+                </Grid>
+            </Grid>
         </ListItem>
     );
 }
