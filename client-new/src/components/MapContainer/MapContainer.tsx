@@ -27,7 +27,6 @@ function MapContainer() {
     const [lat, setLat] = useState(defaultCenter.lat);
     const [lng, setLng] = useState(defaultCenter.lng);
     const [map, setMap] = useState<google.maps.Map | null>(null);
-    // const isLocationAccessEnabled = useSelector(selectIsLocationAccessEnabled);
 
     useEffect(() => {
         // Get location of user in order to center the map
