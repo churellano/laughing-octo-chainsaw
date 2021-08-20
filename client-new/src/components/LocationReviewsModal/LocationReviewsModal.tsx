@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Modal, Paper, Typography } from "@material-ui/core";
+import { Box, Button, CircularProgress, createStyles, Divider, makeStyles, Modal, Paper, Theme, Typography } from "@material-ui/core";
 import Pagination from '@material-ui/lab/Pagination';
 import { useEffect } from "react";
 import { useState, Fragment } from "react";
@@ -13,7 +13,22 @@ import {
 import { ILocationReview } from "../../interfaces/ILocationReview";
 import LocationReview from "../LocationReview";
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+        display:'flex',
+        alignItems:'center',
+        justifyContent:'center',
+    },
+    modalContent: {
+        width: '50%'
+    }
+  })
+);
+
 function LocationReviewsModal() {
+    const classes = useStyles();
+
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const [page, setPage] = useState(1);
@@ -50,6 +65,16 @@ function LocationReviewsModal() {
 
     const pagesCount = Math.ceil(locationReviewsCount / 5);
 
+    const content = locationReviews.length ? 
+        (
+            locationReviews.map((locationReview: ILocationReview, index) => (
+                <Fragment key={locationReview._id}>
+                    <LocationReview locationReview={locationReview}/>
+                    {(index + 1 === locationReviews.length) ? null : <Divider />}
+                </Fragment>
+            ))
+        ) : <CircularProgress />;
+
     return (
         <Fragment>
             <Box mb={2}>
@@ -58,21 +83,14 @@ function LocationReviewsModal() {
                 </Button>
             </Box>
             <Modal
+                className={classes.root}
                 open={open}
                 onClose={handleCancel}
-                style={{ display:'flex', alignItems:'center', justifyContent:'center' }}
             >
-                <Paper>
+                <Paper className={classes.modalContent}>
                     <Box p={2}>
                         <Typography variant='h5' component='div'>All reviews</Typography>
-                        {
-                            locationReviews.map((locationReview: ILocationReview, index) => (
-                                <Fragment key={locationReview._id}>
-                                    <LocationReview locationReview={locationReview}/>
-                                    {(index + 1 === locationReviews.length) ? null : <Divider />}
-                                </Fragment>
-                            ))
-                        }
+                        {content}
                         <Box justifyContent='center'>
                             <Pagination count={pagesCount} page={page} onChange={handleChange} />
                         </Box>
