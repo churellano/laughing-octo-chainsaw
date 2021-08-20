@@ -7,5 +7,5 @@ export default class Utility {
 
     static pointToLatLng = (point: Point) => new google.maps.LatLng(point.coordinates[1], point.coordinates[0]);
 
-    static isUserLocationEnabled = () => 'geolocation' in navigator;
+    static isUserLocationEnabled = () => { console.log('isUserLocationEnabled'); return 'geolocation' in navigator } ;
 }
