@@ -27,13 +27,12 @@ import {
     selectLocationReviewsStatus
 } from '../../features/locationReview/LocationReviewSlice'
 import SubmitReviewModal from "../SubmitReviewModal";
-
-const decimalToPercent = (decimal: number) => Math.floor(decimal * 100);
+import Utility from '../../helpers/utility';
 
 const buildRecommendString = (locationDetails: ILocationDetails) => {
     const reviewsLength = (typeof locationDetails.reviews !== undefined && locationDetails.reviews) ? locationDetails.reviews.length : 0; 
     
-    let recommendString = `${decimalToPercent(calculateScore(locationDetails.upvotes, locationDetails.downvotes))}% recommend this location `;
+    let recommendString = `${Utility.decimalToPercent(Utility.calculateScore(locationDetails.upvotes, locationDetails.downvotes))}% recommend this location `;
     if (reviewsLength === 0) {
         recommendString = 'No reviews yet. Be the first!';
     } else if (reviewsLength === 1) {
@@ -45,15 +44,13 @@ const buildRecommendString = (locationDetails: ILocationDetails) => {
     return recommendString;
 }
 
-const calculateScore = (upvotes: number, downvotes: number) => (upvotes) / (upvotes + downvotes);
-
 const scoreColor = (locationDetails: ILocationDetails) => {
     if (!locationDetails.reviews || locationDetails.reviews.length === 0) {
         return grey[500];
     } 
 
     let color;
-    const score = calculateScore(locationDetails.upvotes, locationDetails.downvotes);
+    const score = Utility.calculateScore(locationDetails.upvotes, locationDetails.downvotes);
     if (score > 0.8) {
         color = green[500];
     }
@@ -73,7 +70,7 @@ const scoreColor = (locationDetails: ILocationDetails) => {
 }
 
 const renderReviews = (locationReviews: Array<ILocationReview>) => (
-    <Box m={1} style={{'width': '100%'}}>
+    <Box style={{'width': '100%'}}>
         <Paper variant='outlined'>
             <LocationReviews locationReviews={locationReviews} />
         </Paper>
@@ -82,7 +79,7 @@ const renderReviews = (locationReviews: Array<ILocationReview>) => (
 
 const renderPage = (locationDetails: ILocationDetails) => (
     <Fragment>
-        <Box ml={1} mb={2} style={{'width': '100%'}}>
+        <Box mb={2} style={{'width': '100%'}}>
             <Paper variant='outlined'>
                 <Box p={1}>
                     <Typography variant='h5'>{locationDetails?.name}</Typography>
@@ -159,7 +156,7 @@ function LocationDetails() {
     }
 
     return (
-        <Box ml={2} style={{ 'maxWidth': '30%', 'width': '30%' }}>
+        <Box style={{ width: '100%'}}>
             {content}
         </Box>
     ) ;
