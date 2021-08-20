@@ -6,6 +6,7 @@ import { setSelectedPlaceId, setSelectedLatLng, setSelectedLocationDetailsFromMa
 import { clearSelectedLocationReviews } from '../../features/locationReview/LocationReviewSlice';
 import { useDispatch } from 'react-redux';
 import { CircularProgress } from "@material-ui/core";
+import Utility from '../../helpers/utility';
 
 const containerStyle = {
     width: '100%',
@@ -26,11 +27,10 @@ function MapContainer() {
     const [lat, setLat] = useState(defaultCenter.lat);
     const [lng, setLng] = useState(defaultCenter.lng);
     const [map, setMap] = useState<google.maps.Map | null>(null);
-    // const [placeResult, setPlaceResult] = useState(null);
 
     useEffect(() => {
         // Get location of user in order to center the map
-        if ('geolocation' in navigator) {
+        if (Utility.isUserLocationEnabled()) {
             navigator.geolocation.getCurrentPosition((position) => {
                 setLat(position.coords.latitude);
                 setLng(position.coords.longitude);

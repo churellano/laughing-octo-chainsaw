@@ -6,4 +6,6 @@ export default class Utility {
     static decimalToPercent = (decimal: number) => Math.floor(decimal * 100);
 
     static pointToLatLng = (point: Point) => new google.maps.LatLng(point.coordinates[1], point.coordinates[0]);
+
+    static isUserLocationEnabled = () => 'geolocation' in navigator;
 }
