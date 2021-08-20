@@ -10,6 +10,7 @@ interface LocationDetailsState {
     selectedLocationDetails: ILocationDetails | null;
     selectedLocationDetailsFromMaps: ILocationDetails | null,
     nearestLocationDetails: Array<ILocationDetails>,
+    nearestLocationDetailsStatus: 'idle' | 'loading' | 'succeeded' | 'failed',
     status: 'idle' | 'loading' | 'succeeded' | 'failed',
     error: string | null | undefined
 }
@@ -20,6 +21,7 @@ const initialState: LocationDetailsState = {
     selectedLocationDetails: null,
     selectedLocationDetailsFromMaps: null,
     nearestLocationDetails: [],
+    nearestLocationDetailsStatus: 'idle',
     status: 'idle',
     error: null
 }
@@ -41,10 +43,12 @@ export const locationDetailsSlice = createSlice({
     reducers: {
       setSelectedPlaceId: (state, action: PayloadAction<string>) => {
           state.selectedPlaceId = action.payload;
+          state.nearestLocationDetailsStatus = 'idle';
           state.status = 'idle';
       },
       setSelectedLatLng: (state, action: PayloadAction<google.maps.LatLng>) => {
         state.selectedLatLng = action.payload;
+        state.nearestLocationDetailsStatus = 'idle';
       },
       setSelectedLocationDetailsFromMaps: (state, action: PayloadAction<google.maps.places.PlaceResult>) => {
         state.selectedLocationDetailsFromMaps = {
@@ -67,13 +71,16 @@ export const locationDetailsSlice = createSlice({
             state.status = 'failed';
             state.error = action.error.message;
           })
+          .addCase(fetchNearestLocationDetails.pending, (state) => {
+            state.nearestLocationDetailsStatus = 'loading';
+          })
           .addCase(fetchNearestLocationDetails.fulfilled, (state, action) => {
-            // state.status = 'succeeded';
+            state.nearestLocationDetailsStatus = 'succeeded';
             state.nearestLocationDetails = action.payload;
             state.error = null;
           })
           .addCase(fetchNearestLocationDetails.rejected, (state, action) => {
-            // state.status = 'failed';
+            state.nearestLocationDetailsStatus = 'failed';
             state.error = action.error.message;
           });
       }
@@ -89,5 +96,6 @@ export const selectLatLng = (state: RootState) => state.locationDetails.selected
 export const selectLocationDetails = (state: RootState) => state.locationDetails.selectedLocationDetails;
 export const selectLocationDetailsFromMaps = (state: RootState) => state.locationDetails.selectedLocationDetailsFromMaps;
 export const selectNearestLocationDetails = (state: RootState) => state.locationDetails.nearestLocationDetails;
+export const selectNearestLocationDetailsStatus = (state: RootState) => state.locationDetails.nearestLocationDetailsStatus;
 export const selectLocationDetailsStatus = (state: RootState) => state.locationDetails.status;
 export const selectLocationDetailsError =  (state: RootState) => state.locationDetails.error;
