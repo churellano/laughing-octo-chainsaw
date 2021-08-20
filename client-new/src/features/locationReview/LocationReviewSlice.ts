@@ -42,6 +42,7 @@ export const locationReviewSlice = createSlice({
     reducers: {
         clearSelectedLocationReviews: (state) => {
             state.recentLocationReviews = [];
+            state.locationReviews = [];
             state.status = 'idle';
         },
         // resetLocationReviewsStatus: (state) => {
