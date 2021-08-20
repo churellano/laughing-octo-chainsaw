@@ -75,10 +75,10 @@ function NearestList() {
                 }
             </List>
         )
-    } else if (nearestLocationDetailsStatus === 'idle' || nearestLocationDetailsStatus === 'loading' && Utility.isUserLocationEnabled()) {
+    }  else if (nearestLocationDetailsStatus === 'succeeded' && !nearestLocationDetails.length) {
+        content = <Typography variant='body1'>No locations were found in this area.</Typography>
+    } else if (nearestLocationDetailsStatus === 'loading' && navigator.geolocation) {
         content = <CircularProgress />;
-    } else if (nearestLocationDetailsStatus === 'succeeded' && !nearestLocationDetails.length) {
-        content = <Typography variant='h6'>No locations were found in this area.</Typography>
     }
 
     return (
