@@ -33,7 +33,6 @@ export const fetchLocationDetails = createAsyncThunk('locationDetails/fetchLocat
 
 export const fetchNearestLocationDetails = createAsyncThunk('locationDetails/fetchNearestLocationDetails', async (point: Point) => {
   const response = await LocationDetailsAPI.getNearest(point);
-  console.log('fetchNearestLocationDetails response', response);
   return response;
 });
 
@@ -86,7 +85,11 @@ export const locationDetailsSlice = createSlice({
       }
 });
 
-export const { setSelectedPlaceId, setSelectedLatLng, setSelectedLocationDetailsFromMaps } = locationDetailsSlice.actions;
+export const {
+  setSelectedPlaceId,
+  setSelectedLatLng,
+  setSelectedLocationDetailsFromMaps
+} = locationDetailsSlice.actions;
 
 export default locationDetailsSlice.reducer;
 
