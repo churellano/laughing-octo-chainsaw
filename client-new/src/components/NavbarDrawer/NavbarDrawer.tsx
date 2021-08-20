@@ -5,7 +5,6 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import RateReviewIcon from '@material-ui/icons/RateReview';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Link } from "react-router-dom";
-import Reviews from "../Reviews";
 
 function NavbarDrawer() {
     const [open, setOpen] = useState(false);

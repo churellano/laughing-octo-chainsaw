@@ -38,7 +38,6 @@ function LocationReviewsModal() {
     const locationReviewsCount = useSelector(selectLocationReviewsCount);
 
     useEffect(() => {
-        console.log(locationDetails, locationReviews, locationDetails && !locationReviews.length);
         if (locationDetails && !locationReviews.length) {
             dispatch(fetchLocationReviewsWithSkip({
                 locationId: locationDetails._id,
@@ -46,7 +45,7 @@ function LocationReviewsModal() {
                 limit: 5
             }));
         }
-    }, [open, page, locationDetails])
+    }, [dispatch, open, page, locationDetails, locationReviews])
 
     const handleCancel = () => {
         setOpen(false);

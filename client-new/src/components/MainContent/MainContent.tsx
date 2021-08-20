@@ -1,8 +1,7 @@
-import { Container, createStyles, Grid, makeStyles, Paper, Theme, useTheme } from "@material-ui/core";
+import { createStyles, Grid, makeStyles, Theme, useTheme } from "@material-ui/core";
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import MapContainer from '../MapContainer';
 import NearestList from '../NearestList';
-import Box from '@material-ui/core/Box';
 import LocationDetails from '../LocationDetails';
 
 const useStyles = makeStyles((theme: Theme) =>

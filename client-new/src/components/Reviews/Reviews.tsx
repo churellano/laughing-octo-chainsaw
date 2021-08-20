@@ -2,7 +2,7 @@ import { ListItem, ListItemIcon, ListItemText, Modal, Paper, Box, Typography } f
 import RateReviewIcon from '@material-ui/icons/RateReview';
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { Link, Redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { selectLoggedInUser } from "../../features/user/UserSlice";
 
 

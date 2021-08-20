@@ -5,7 +5,7 @@ import { Libraries } from '@react-google-maps/api/dist/utils/make-load-script-ur
 import { setSelectedPlaceId, setSelectedLatLng, setSelectedLocationDetailsFromMaps, fetchNearestLocationDetails } from '../../features/locationDetails/LocationDetailsSlice';
 import { clearSelectedLocationReviews } from '../../features/locationReview/LocationReviewSlice';
 import { useDispatch } from 'react-redux';
-import { Box, CircularProgress } from "@material-ui/core";
+import { CircularProgress } from "@material-ui/core";
 
 const containerStyle = {
     width: '100%',
@@ -42,7 +42,7 @@ function MapContainer() {
                 dispatch(setSelectedLatLng(new google.maps.LatLng(position.coords.latitude, position.coords.longitude)));
             });
         }
-    }, []);
+    });
 
     const { isLoaded, loadError } = useJsApiLoader({
         googleMapsApiKey: GOOGLE_API_KEY,
