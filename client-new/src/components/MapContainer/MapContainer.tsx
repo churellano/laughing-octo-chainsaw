@@ -27,22 +27,25 @@ function MapContainer() {
     const [lat, setLat] = useState(defaultCenter.lat);
     const [lng, setLng] = useState(defaultCenter.lng);
     const [map, setMap] = useState<google.maps.Map | null>(null);
+    // const isLocationAccessEnabled = useSelector(selectIsLocationAccessEnabled);
 
     useEffect(() => {
         // Get location of user in order to center the map
-        if (Utility.isUserLocationEnabled()) {
+        if (navigator.geolocation && map) {
             navigator.geolocation.getCurrentPosition((position) => {
                 setLat(position.coords.latitude);
                 setLng(position.coords.longitude);
-                map?.setCenter({ lat, lng });
+
+                const latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                map.setCenter(latLng);
                 dispatch(fetchNearestLocationDetails({
                     type: "Point",
                     coordinates: [position.coords.longitude, position.coords.latitude]
                 }));
-                dispatch(setSelectedLatLng(new google.maps.LatLng(position.coords.latitude, position.coords.longitude)));
+                dispatch(setSelectedLatLng(latLng));
             });
         }
-    });
+    }, [dispatch, map]);
 
     const { isLoaded, loadError } = useJsApiLoader({
         googleMapsApiKey: GOOGLE_API_KEY,
