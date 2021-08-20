@@ -1,11 +1,12 @@
 import { GOOGLE_API_KEY } from '../../constants';
-import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import { CSSProperties, useEffect, useState } from 'react';
 import { Libraries } from '@react-google-maps/api/dist/utils/make-load-script-url';
-import { setSelectedPlaceId, setSelectedLatLng, setSelectedLocationDetailsFromMaps, fetchNearestLocationDetails } from '../../features/locationDetails/LocationDetailsSlice';
+import { setSelectedPlaceId, setSelectedLatLng, setSelectedLocationDetailsFromMaps, fetchNearestLocationDetails, selectLatLng, selectLocationDetails } from '../../features/locationDetails/LocationDetailsSlice';
 import { clearSelectedLocationReviews } from '../../features/locationReview/LocationReviewSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { CircularProgress } from "@material-ui/core";
+import Utility from '../../helpers/utility';
 
 const containerStyle = {
     width: '100%',
@@ -26,6 +27,8 @@ function MapContainer() {
     const [lat, setLat] = useState(defaultCenter.lat);
     const [lng, setLng] = useState(defaultCenter.lng);
     const [map, setMap] = useState<google.maps.Map | null>(null);
+    const selectedLatLng = useSelector(selectLatLng);
+    // const selectedLocationDetails = useSelector(selectLocationDetails);
 
     useEffect(() => {
         // Get location of user in order to center the map
@@ -70,7 +73,6 @@ function MapContainer() {
 
     // Retrieves information about a named location on Google Maps
     const findPlaceById = (placeId: string) => {
-        console.log('Looking for place with Id: ', placeId);
         if (google.maps.places && map) {
             let service = new google.maps.places.PlacesService(map);
             let request = {
@@ -83,23 +85,22 @@ function MapContainer() {
                     dispatch(setSelectedPlaceId(placeId));
                     dispatch(setSelectedLocationDetailsFromMaps(placeResult));
                     dispatch(clearSelectedLocationReviews());
-                    // setPlaceResult(placeResult);
                 }
             });
         }
     };
 
-    const renderMap = () => {
-        return (
-            <GoogleMap
-                mapContainerStyle={containerStyle}
-                center={{ lat, lng }}
-                zoom={15}
-                onClick={(e: google.maps.MapMouseEvent | google.maps.IconMouseEvent) => handleClick(e)}
-                onLoad={map => setMap(map)}
-            />
-        );
-      }
+    const renderMap = () => (
+        <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={{ lat, lng }}
+            zoom={15}
+            onClick={(e: google.maps.MapMouseEvent | google.maps.IconMouseEvent) => handleClick(e)}
+            onLoad={map => setMap(map)}
+        >
+            { selectedLatLng && <Marker position={selectedLatLng} />}
+        </GoogleMap>
+    );
 
     if (loadError) {
         return <div>Map cannot be loaded right now, sorry.</div>

@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { setSelectedPlaceId } from '../../features/locationDetails/LocationDetailsSlice';
+import { setSelectedLatLng, setSelectedPlaceId } from '../../features/locationDetails/LocationDetailsSlice';
 import { clearSelectedLocationReviews } from '../../features/locationReview/LocationReviewSlice';
 import { ILocationDetails } from '../../interfaces/ILocationDetails';
 
@@ -44,6 +44,7 @@ function NearestListItem({ locationDetails, distance }: NearestListItemProps ) {
 
     const handleClick = (locationDetails: ILocationDetails) => {
         dispatch(setSelectedPlaceId(locationDetails.placeId));
+        dispatch(setSelectedLatLng(Utility.pointToLatLng(locationDetails.point)));
         dispatch(clearSelectedLocationReviews());
     }
 
