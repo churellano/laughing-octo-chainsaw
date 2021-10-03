@@ -1,8 +1,8 @@
 import { getData, postData } from '../helpers/http';
 import { USER_API_URL } from '../constants';
-import { IUSer } from '../interfaces/IUser';
-import { ILoginDetails } from '../interfaces/ILoginDetails';
-import { ISignupDetails } from '../interfaces/ISignupDetails';
+import { User } from '../interfaces/User';
+import { LoginDetails } from '../interfaces/LoginDetails';
+import { SignupDetails } from '../interfaces/SignupDetails';
 
 const UserAPI = {
     /**
@@ -10,16 +10,16 @@ const UserAPI = {
      * @param loginDetails
      * @returns Promise<IUSer>
      */
-    login: (loginDetails: ILoginDetails): Promise<IUSer> => {
-        return postData<IUSer>(USER_API_URL + 'login', loginDetails);
+    login: (loginDetails: LoginDetails): Promise<User> => {
+        return postData<User>(USER_API_URL + 'login', loginDetails);
     },
     /**
      * Attempt to create a new account with provided user information
      * @param signupDetails
      * @returns Promise<IUSer>
      */
-    signup: (signupDetails: ISignupDetails): Promise<IUSer> => {
-        return postData<IUSer>(USER_API_URL + 'signup', signupDetails);
+    signup: (signupDetails: SignupDetails): Promise<User> => {
+        return postData<User>(USER_API_URL + 'signup', signupDetails);
     },
     /**
      * Checks if email is available

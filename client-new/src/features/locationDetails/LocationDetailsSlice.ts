@@ -1,15 +1,15 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '../../app/store';
-import { ILocationDetails } from '../../interfaces/ILocationDetails';
+import { LocationDetails } from '../../interfaces/LocationDetails';
 import LocationDetailsAPI from '../../api/LocationDetails';
 import { Point } from 'geojson';
 
 interface LocationDetailsState {
     selectedPlaceId: string | null;
     selectedLatLng: google.maps.LatLng | null;
-    selectedLocationDetails: ILocationDetails | null;
-    selectedLocationDetailsFromMaps: ILocationDetails | null,
-    nearestLocationDetails: Array<ILocationDetails>,
+    selectedLocationDetails: LocationDetails | null;
+    selectedLocationDetailsFromMaps: LocationDetails | null,
+    nearestLocationDetails: Array<LocationDetails>,
     nearestLocationDetailsStatus: 'idle' | 'loading' | 'succeeded' | 'failed',
     status: 'idle' | 'loading' | 'succeeded' | 'failed',
     error: string | null | undefined
@@ -56,7 +56,7 @@ export const locationDetailsSlice = createSlice({
           address: action.payload.formatted_address,
           upvotes: 0,
           downvotes: 0,
-        } as ILocationDetails;
+        } as LocationDetails;
       }
     },
     extraReducers: (builder) => {

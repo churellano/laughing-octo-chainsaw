@@ -1,11 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import type { RootState } from '../../app/store';
-import { ILocationReview } from '../../interfaces/ILocationReview';
+import { LocationReview } from '../../interfaces/LocationReview';
 import LocationReviewAPI from '../../api/LocationReview';
 
 interface LocationReviewState {
-  recentLocationReviews: Array<ILocationReview>;
-  locationReviews: Array<ILocationReview>;
+  recentLocationReviews: Array<LocationReview>;
+  locationReviews: Array<LocationReview>;
   count: number;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null | undefined;
@@ -31,7 +31,7 @@ export const fetchLocationReviewsWithSkip = createAsyncThunk('locationReview/fet
   return response;
 });
 
-export const submitLocationReview = createAsyncThunk('locationReview/submitLocationReview', async (locationReview: ILocationReview) => {
+export const submitLocationReview = createAsyncThunk('locationReview/submitLocationReview', async (locationReview: LocationReview) => {
     const response = await LocationReviewAPI.post(locationReview);
     return response;
 });

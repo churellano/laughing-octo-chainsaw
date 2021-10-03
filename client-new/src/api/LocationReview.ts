@@ -1,9 +1,9 @@
 import { getData, postData } from '../helpers/http';
-import { ILocationReview } from '../interfaces/ILocationReview';
+import { LocationReview } from '../interfaces/LocationReview';
 import { LOCATION_REVIEW_API_URL } from '../constants';
 
 export interface LocationReviewsWithCount {
-    locationReviews: Array<ILocationReview>;
+    locationReviews: Array<LocationReview>;
     count: number;
 };
 
@@ -22,14 +22,14 @@ const LocationReviewAPI = {
      * @returns Array<ILocationReview>
      */
     getRecent: (locationId: string) => {
-        return getData<Array<ILocationReview>>(`${LOCATION_REVIEW_API_URL}getRecentLocationReviews/${locationId}`);
+        return getData<Array<LocationReview>>(`${LOCATION_REVIEW_API_URL}getRecentLocationReviews/${locationId}`);
     },
     /**
      * Creates a new review
      * @param locationReview
      * @returns ILocationReview
      */
-    post: (locationReview: ILocationReview) => {
+    post: (locationReview: LocationReview) => {
         return postData(LOCATION_REVIEW_API_URL, locationReview);
     }
 }
