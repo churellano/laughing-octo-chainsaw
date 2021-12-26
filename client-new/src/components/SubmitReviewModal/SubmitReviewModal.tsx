@@ -79,7 +79,7 @@ function SubmitReviewModal(props: SubmitReviewModalProps) {
           address: props.address,
           point: {
             type: "Point",
-            coordinates: [selectedLatLng.lng(), selectedLatLng.lat()],
+            coordinates: [selectedLatLng.lng, selectedLatLng.lat],
           },
         };
       }

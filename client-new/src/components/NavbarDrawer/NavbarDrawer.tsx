@@ -32,8 +32,13 @@ function NavbarDrawer() {
 
   return (
     <>
-      <IconButton edge="start" color="inherit" aria-label="menu">
-        <MenuIcon onClick={toggleDrawer(true)} />
+      <IconButton
+        edge="start"
+        color="inherit"
+        aria-label="menu"
+        onClick={toggleDrawer(true)}
+      >
+        <MenuIcon />
       </IconButton>
       <Drawer open={open} onClose={toggleDrawer(false)}>
         <Box display="flex" justifyContent="space-around">
@@ -42,8 +47,13 @@ function NavbarDrawer() {
               GottaGo
             </Typography>
           </Box>
-          <IconButton color="inherit" edge="end" aria-label="menu">
-            <ClearIcon onClick={toggleDrawer(false)} />
+          <IconButton
+            color="inherit"
+            edge="end"
+            aria-label="menu"
+            onClick={toggleDrawer(false)}
+          >
+            <ClearIcon />
           </IconButton>
         </Box>
         <List>

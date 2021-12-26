@@ -6,7 +6,7 @@ import { Point } from 'geojson';
 
 interface LocationDetailsState {
     selectedPlaceId: string | null;
-    selectedLatLng: google.maps.LatLng | null;
+    selectedLatLng: google.maps.LatLngLiteral | null;
     selectedLocationDetails: LocationDetails | null;
     selectedLocationDetailsFromMaps: LocationDetails | null,
     nearestLocationDetails: Array<LocationDetails>,
@@ -45,7 +45,7 @@ export const locationDetailsSlice = createSlice({
           state.nearestLocationDetailsStatus = 'idle';
           state.status = 'idle';
       },
-      setSelectedLatLng: (state, action: PayloadAction<google.maps.LatLng>) => {
+      setSelectedLatLng: (state, action: PayloadAction<google.maps.LatLngLiteral>) => {
         state.selectedLatLng = action.payload;
         state.nearestLocationDetailsStatus = 'idle';
       },

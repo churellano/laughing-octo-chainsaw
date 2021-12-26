@@ -21,6 +21,7 @@ import {
 import { LocationDetails } from "../../interfaces/LocationDetails";
 import NearestListItem from "../NearestListItem";
 import Utility from "../../helpers/utility";
+import { Fragment } from "react";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -69,15 +70,14 @@ function NearestList() {
       >
         {nearestLocationDetails.map(
           (locationDetails: LocationDetails, index: number) => (
-            <>
+            <Fragment key={locationDetails._id}>
               <NearestListItem
-                key={locationDetails._id}
                 locationDetails={locationDetails}
                 distance={
                   currentLatLng &&
                   computeDistanceBetween(
                     currentLatLng,
-                    Utility.pointToLatLng(locationDetails.point)
+                    Utility.pointToLatLngLiteral(locationDetails.point)
                   ) / 1000
                 }
               />
@@ -91,7 +91,7 @@ function NearestList() {
                   }}
                 />
               )}
-            </>
+            </Fragment>
           )
         )}
       </List>

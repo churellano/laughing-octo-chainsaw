@@ -56,7 +56,9 @@ function NearestListItem({ locationDetails, distance }: NearestListItemProps) {
 
   const handleClick = (locationDetails: LocationDetails) => {
     dispatch(setSelectedPlaceId(locationDetails.placeId));
-    dispatch(setSelectedLatLng(Utility.pointToLatLng(locationDetails.point)));
+    dispatch(
+      setSelectedLatLng(Utility.pointToLatLngLiteral(locationDetails.point))
+    );
     dispatch(clearSelectedLocationReviews());
   };
 
