@@ -9,9 +9,17 @@ export interface LocationReviewsWithCount {
 
 const LocationReviewAPI = {
     /**
+     * Gets all reviews written by a user
+     * @param username
+     * @returns Array<LocationReview>
+     */
+    getByUsernameWithSkip: (username: string, skip: number, limit: number) => {
+        return getData<LocationReviewsWithCount>(`${LOCATION_REVIEW_API_URL}getByUsernameWithSkip/${username}?skip=${skip}&limit=${limit}`);
+    },
+    /**
      * Gets reviews of a location
      * @param locationId
-     * @returns Array<ILocationReview>
+     * @returns Array<LocationReview>
      */
     getWithSkip: (locationId: string, skip: number, limit: number) => {
         return getData<LocationReviewsWithCount>(`${LOCATION_REVIEW_API_URL}${locationId}?skip=${skip}&limit=${limit}`);
@@ -19,7 +27,7 @@ const LocationReviewAPI = {
     /**
      * Gets 5 most recent reviews of a location
      * @param locationId
-     * @returns Array<ILocationReview>
+     * @returns Array<LocationReview>
      */
     getRecent: (locationId: string) => {
         return getData<Array<LocationReview>>(`${LOCATION_REVIEW_API_URL}getRecentLocationReviews/${locationId}`);
@@ -27,7 +35,7 @@ const LocationReviewAPI = {
     /**
      * Creates a new review
      * @param locationReview
-     * @returns ILocationReview
+     * @returns LocationReview
      */
     post: (locationReview: LocationReview) => {
         return postData(LOCATION_REVIEW_API_URL, locationReview);

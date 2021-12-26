@@ -4,6 +4,7 @@ import {
   Avatar,
   ListItemText,
   Typography,
+  Tooltip,
 } from "@material-ui/core";
 import { Fragment } from "react";
 import { LocationReview as LocationReviewType } from "../../interfaces/LocationReview";
@@ -16,6 +17,7 @@ interface LocationReviewProps {
 }
 
 function LocationReview({ locationReview }: LocationReviewProps) {
+  const date = new Date(locationReview.postedDate);
   return (
     <ListItem>
       <ListItemAvatar>
@@ -25,9 +27,11 @@ function LocationReview({ locationReview }: LocationReviewProps) {
         primary={locationReview.user.username}
         secondary={
           <Fragment>
-            <Typography component="div" variant="body2" color="textSecondary">
-              {dayjs().to(locationReview.postedDate)}
-            </Typography>
+            <Tooltip title={date.toString()}>
+              <Typography component="div" variant="body2" color="textSecondary">
+                {dayjs().to(date)}
+              </Typography>
+            </Tooltip>
             <Typography component="div" variant="body2" color="textPrimary">
               {locationReview.description}
             </Typography>

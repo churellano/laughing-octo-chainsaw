@@ -1,7 +1,21 @@
 // const connectionString =
 const LocationDetails = require('../schemas/locationDetailsSchema');
 const LocationReview = require('../schemas/locationReviewSchema');
+const User = require('../schemas/userSchema');
 const ObjectId = require('mongoose').Types.ObjectId; 
+
+async function getLocationReviewsByUsernameWithSkip(username, skip, limit) {
+  const { _id } = await User.findOne({ username });
+  const locationReviews = await LocationReview
+    .find({ user: new ObjectId(_id) })
+    .populate('user')
+    .sort({'postedDate': -1})
+    .skip(skip)
+    .limit(limit);
+  const count = await LocationReview.find({ user: new ObjectId(_id) }).countDocuments();
+
+  return { locationReviews, count };
+}
 
 async function getRecentLocationReviews(locationId) {
   console.log('locationId', locationId);
@@ -74,6 +88,7 @@ async function createLocationReview({ locationDetails, user, description, recomm
 }
 
 module.exports = {
+  getLocationReviewsByUsernameWithSkip,
   getRecentLocationReviews,
   getLocationReviewsWithSkip,
   createLocationReview
