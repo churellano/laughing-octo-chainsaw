@@ -71,6 +71,7 @@ function NearestList() {
           (locationDetails: LocationDetails, index: number) => (
             <>
               <NearestListItem
+                key={locationDetails._id}
                 locationDetails={locationDetails}
                 distance={
                   currentLatLng &&
