@@ -41,10 +41,10 @@ function MapContainer() {
         setLat(position.coords.latitude);
         setLng(position.coords.longitude);
 
-        const latLng = new google.maps.LatLng(
-          position.coords.latitude,
-          position.coords.longitude
-        );
+        const latLng = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        } as google.maps.LatLngLiteral;
         map.setCenter(latLng);
         dispatch(
           fetchNearestLocationDetails({
@@ -76,7 +76,7 @@ function MapContainer() {
           coordinates: [lng, lat],
         })
       );
-      dispatch(setSelectedLatLng(new google.maps.LatLng(lat, lng)));
+      dispatch(setSelectedLatLng({ lat, lng } as google.maps.LatLngLiteral));
     }
 
     if ("placeId" in e && e.placeId) {

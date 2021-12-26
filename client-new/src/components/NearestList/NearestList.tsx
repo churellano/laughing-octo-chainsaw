@@ -77,7 +77,7 @@ function NearestList() {
                   currentLatLng &&
                   computeDistanceBetween(
                     currentLatLng,
-                    Utility.pointToLatLng(locationDetails.point)
+                    Utility.pointToLatLngLiteral(locationDetails.point)
                   ) / 1000
                 }
               />
