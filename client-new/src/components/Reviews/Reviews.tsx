@@ -89,7 +89,7 @@ function Reviews() {
     <ListItem
       button
       onClick={() => {
-        setOpen(true);
+        setOpen(!open);
       }}
     >
       <ListItemIcon>
