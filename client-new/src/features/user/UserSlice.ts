@@ -1,14 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import type { RootState } from '../../app/store';
-import { IUSer } from '../../interfaces/IUser';
+import { User } from '../../interfaces/User';
 import UserAPI from '../../api/User';
-import { ILoginDetails } from '../../interfaces/ILoginDetails';
-import { ISignupDetails } from '../../interfaces/ISignupDetails';
-// import { IUser } from '../../interfaces/IUser';
-// import { findUsers } from '../../services/UserService';
+import { LoginDetails } from '../../interfaces/LoginDetails';
+import { SignupDetails } from '../../interfaces/SignupDetails';
 
 interface UserState {
-    loggedInUser: IUSer | null;
+    loggedInUser: User | null;
     // status: 'idle' | 'loading' | 'succeeded' | 'failed',
     error: string | null | undefined
 }
@@ -19,12 +17,12 @@ const initialState: UserState = {
     error: null
 }
 
-export const login = createAsyncThunk('user/login', async (loginDetails: ILoginDetails) => {
+export const login = createAsyncThunk('user/login', async (loginDetails: LoginDetails) => {
     const response = await UserAPI.login(loginDetails);
     return response;
 });
 
-export const signup = createAsyncThunk('user/signup', async (signupDetails: ISignupDetails) => {
+export const signup = createAsyncThunk('user/signup', async (signupDetails: SignupDetails) => {
     const response = await UserAPI.signup(signupDetails);
     return response;
 });

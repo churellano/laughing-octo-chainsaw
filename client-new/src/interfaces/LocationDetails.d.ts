@@ -1,7 +1,7 @@
-import { ILocationReview } from "./ILocationReview";
+import { LocationReview } from "./LocationReview";
 import { Point } from 'geojson';
 
-export interface ILocationDetails {
+export interface LocationDetails {
     _id: string | null;
     placeId: string;
     name: string;
@@ -9,5 +9,5 @@ export interface ILocationDetails {
     point: Point;
     upvotes: number;
     downvotes: number;
-    reviews: Array<ILocationReview>;
+    reviews: Array<LocationReview>;
 }

@@ -1,11 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import type { RootState } from '../../app/store';
-import { ILocationReview } from '../../interfaces/ILocationReview';
+import { LocationReview } from '../../interfaces/LocationReview';
 import LocationReviewAPI from '../../api/LocationReview';
 
 interface LocationReviewState {
-  recentLocationReviews: Array<ILocationReview>;
-  locationReviews: Array<ILocationReview>;
+  recentLocationReviews: Array<LocationReview>;
+  locationReviews: Array<LocationReview>;
   count: number;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null | undefined;
@@ -25,13 +25,16 @@ export const fetchRecentLocationReviews = createAsyncThunk('locationReview/fetch
 });
 
 export const fetchLocationReviewsWithSkip = createAsyncThunk('locationReview/fetchLocationReviewsWithSkip', async ({ locationId, skip, limit }: any) => {
-  console.log('fetchLocationReviewsWithSkip called');
   const response = await LocationReviewAPI.getWithSkip(locationId, skip, limit);
-  console.log('fetchLocationReviewsWithSkip', response);
   return response;
 });
 
-export const submitLocationReview = createAsyncThunk('locationReview/submitLocationReview', async (locationReview: ILocationReview) => {
+export const fetchLocationReviewsByUsernameWithSkip = createAsyncThunk('locationReview/fetchLocationReviewsByUsernameWithSkip', async ({ username, skip, limit }: any) => {
+  const response = await LocationReviewAPI.getByUsernameWithSkip(username, skip, limit);
+  return response;
+});
+
+export const submitLocationReview = createAsyncThunk('locationReview/submitLocationReview', async (locationReview: LocationReview) => {
     const response = await LocationReviewAPI.post(locationReview);
     return response;
 });
@@ -61,7 +64,6 @@ export const locationReviewSlice = createSlice({
             state.error = action.error.message;
           })
           .addCase(fetchLocationReviewsWithSkip.fulfilled, (state, action) => {
-            console.log('fetchLocationReviewsWithSkip fulfilled', action.payload);
             const { locationReviews, count } = action.payload;
             state.status = 'succeeded';
             state.locationReviews = locationReviews;
@@ -69,6 +71,16 @@ export const locationReviewSlice = createSlice({
             state.error = null;
           })
           .addCase(fetchLocationReviewsWithSkip.rejected, (state, action) => {
+            state.status = 'failed';
+            state.error = action.error.message;
+          })
+          .addCase(fetchLocationReviewsByUsernameWithSkip.fulfilled, (state, action) => {
+            state.status = 'succeeded';
+            state.locationReviews = action.payload.locationReviews;
+            state.count = action.payload.count;
+            state.error = null;
+          })
+          .addCase(fetchLocationReviewsByUsernameWithSkip.rejected, (state, action) => {
             state.status = 'failed';
             state.error = action.error.message;
           })
