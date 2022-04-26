@@ -1,5 +1,6 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
+  selectLocationDetails,
   setSelectedLatLng,
   setSelectedPlaceId,
 } from "../../features/locationDetails/LocationDetailsSlice";
@@ -46,6 +47,7 @@ interface NearestListItemProps {
 
 function NearestListItem({ locationDetails, distance }: NearestListItemProps) {
   const dispatch = useDispatch();
+  const selectedlocationDetailsData = useSelector(selectLocationDetails);
 
   const classes = useStyles();
   const theme = useTheme();
@@ -62,11 +64,17 @@ function NearestListItem({ locationDetails, distance }: NearestListItemProps) {
     dispatch(clearSelectedLocationReviews());
   };
 
+  const isCurrentlySelected =
+    selectedlocationDetailsData?._id === locationDetails._id;
+
   return (
     <ListItem
       className={classes.listItem}
       alignItems="center"
-      style={{ height: largeScreen ? "100%" : "6rem" }}
+      style={{
+        height: largeScreen ? "100%" : "6rem",
+        backgroundColor: isCurrentlySelected ? "grey" : "transparent",
+      }}
       onClick={() => handleClick(locationDetails)}
     >
       <Grid
